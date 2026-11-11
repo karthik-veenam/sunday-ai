@@ -1,0 +1,417 @@
+- id: '1791136713338'
+  alias: Bedroom Auto Climate
+  initial_state: true
+  description: Maintains bedroom at target, or cools to target then turns AC and Auto
+    Climate off. Uses room sensor. Hard blocked between 12 PM and 9 PM.
+  triggers:
+  - trigger: state
+    entity_id: sensor.lumi_lumi_sensor_ht_agl02_temperature
+  - trigger: state
+    entity_id: input_number.bedroom_target_temperature
+  - trigger: state
+    entity_id: input_select.bedroom_auto_climate_mode
+  - trigger: state
+    entity_id: input_boolean.bedroom_auto_climate
+    to: 'on'
+  - trigger: time
+    at: '21:00:00'
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    minutes: /5
+  conditions:
+  - condition: state
+    entity_id: input_boolean.bedroom_auto_climate
+    state: 'on'
+  - condition: time
+    after: '21:00:00'
+    before: '12:00:00'
+  - condition: template
+    value_template: '{{ is_number(states(''sensor.lumi_lumi_sensor_ht_agl02_temperature''))
+      and is_number(states(''input_number.bedroom_target_temperature'')) and states(''climate.bedroom_ac'')
+      not in [''unknown'', ''unavailable''] }}'
+  actions:
+  - variables:
+      room_temp: '{{ states(''sensor.lumi_lumi_sensor_ht_agl02_temperature'') | float
+        }}
+
+        '
+      target: '{{ states(''input_number.bedroom_target_temperature'') | float }}
+
+        '
+      diff: '{{ room_temp - target }}
+
+        '
+      stop_at_target: '{{ is_state(''input_select.bedroom_auto_climate_mode'', ''Cool
+        to target, then stop'') }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ stop_at_target and (room_temp | round(1)) <= target }}'
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ not is_state(''climate.bedroom_ac'', ''off'') }}'
+        then:
+        - action: climate.turn_off
+          target:
+            entity_id: climate.bedroom_ac
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.bedroom_auto_climate
+    - conditions:
+      - condition: state
+        entity_id: climate.bedroom_ac
+        state: 'off'
+      - condition: template
+        value_template: '{{ diff >= 0.3 or (stop_at_target and diff > 0) }}'
+      sequence:
+      - action: climate.turn_on
+        target:
+          entity_id: climate.bedroom_ac
+      - delay:
+          seconds: 1
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.bedroom_ac
+        data:
+          hvac_mode: cool
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.bedroom_climate_session
+      - delay:
+          seconds: 1
+      - action: climate.set_temperature
+        target:
+          entity_id: climate.bedroom_ac
+        data:
+          temperature: '{{ [target - 2, 18] | max | round(0) }}
+
+            '
+      - delay:
+          seconds: 1
+      - action: climate.set_fan_mode
+        target:
+          entity_id: climate.bedroom_ac
+        data:
+          fan_mode: mid
+    - conditions:
+      - condition: template
+        value_template: "{{ states('climate.bedroom_ac') != 'off'\n   and diff >=\
+          \ 1 }}\n"
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''climate.bedroom_ac'') != ''cool'' }}
+
+            '
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            hvac_mode: cool
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: "{{ state_attr('climate.bedroom_ac', 'temperature') | float(0)\n\
+            \   != ([target - 3, 18] | max | round(0)) }}\n"
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            temperature: '{{ [target - 3, 18] | max | round(0) }}
+
+              '
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') !=
+            ''high'' }}
+
+            '
+        then:
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            fan_mode: high
+    - conditions:
+      - condition: template
+        value_template: "{{ states('climate.bedroom_ac') != 'off'\n   and 0.4 <= diff\
+          \ < 1 }}\n"
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''climate.bedroom_ac'') != ''cool'' }}
+
+            '
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            hvac_mode: cool
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: "{{ state_attr('climate.bedroom_ac', 'temperature') | float(0)\n\
+            \   != ([target - 2, 18] | max | round(0)) }}\n"
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            temperature: '{{ [target - 2, 18] | max | round(0) }}
+
+              '
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') !=
+            ''mid'' }}
+
+            '
+        then:
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            fan_mode: mid
+    - conditions:
+      - condition: template
+        value_template: "{{ states('climate.bedroom_ac') != 'off'\n   and -0.3 < diff\
+          \ < 0.4 }}\n"
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ states(''climate.bedroom_ac'') != ''cool'' }}
+
+            '
+        then:
+        - action: climate.set_hvac_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            hvac_mode: cool
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: "{{ state_attr('climate.bedroom_ac', 'temperature') | float(0)\n\
+            \   != ([target - 1, 18] | max | round(0)) }}\n"
+        then:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            temperature: '{{ [target - 1, 18] | max | round(0) }}
+
+              '
+        - delay:
+            seconds: 1
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''climate.bedroom_ac'', ''fan_mode'') !=
+            ''low'' }}
+
+            '
+        then:
+        - action: climate.set_fan_mode
+          target:
+            entity_id: climate.bedroom_ac
+          data:
+            fan_mode: low
+    - conditions:
+      - condition: template
+        value_template: "{{ states('climate.bedroom_ac') != 'off'\n   and diff <=\
+          \ -0.3 }}\n"
+      sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.bedroom_climate_session
+      - delay:
+          seconds: 1
+      - action: climate.turn_off
+        target:
+          entity_id: climate.bedroom_ac
+  mode: restart
+- id: sunday_no_listening_native_mute
+  alias: Sunday No listening · native microphone gate
+  description: Master no-listening mode gates the native LVA microphone as well as
+    the local Sunday wake/input gate. Enabling never runs a device action.
+  triggers:
+  - trigger: state
+    entity_id: input_boolean.sunday_no_listening
+    id: mode_changed
+  - trigger: homeassistant
+    event: start
+    id: startup
+  - trigger: state
+    entity_id: switch.sunday_mute
+    to: 'off'
+    id: native_unmuted
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.sunday_no_listening
+        state: 'on'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.sunday_mute
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.id == ''mode_changed'' and is_state(''input_boolean.sunday_no_listening'',''off'')
+          }}'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.sunday_mute
+  mode: restart
+- id: sunday_e6b78ff136ac553172d8de01
+  alias: Geyser - Daily 7:30 AM
+  description: 'Requested by Karthik: turn on the geyser every day at 7:30 AM. No
+    off time was requested.'
+  triggers:
+  - trigger: time
+    at: 07:30:00
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.geyser_socket_1
+  mode: single
+- id: front_door_dnd_expiry_20261110
+  alias: Front Door DND — HA timer expiry
+  mode: single
+  triggers:
+  - trigger: time
+    at: input_datetime.front_door_dnd_until
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    minutes: /1
+  - trigger: state
+    entity_id: switch.onetouch_intercom_do_not_disturb
+    from: unavailable
+  conditions:
+  - condition: state
+    entity_id: input_boolean.front_door_dnd_timer_armed
+    state: 'on'
+  - condition: template
+    value_template: '{{ as_timestamp(states(''input_datetime.front_door_dnd_until''),
+      0) > 0 and as_timestamp(now()) >= as_timestamp(states(''input_datetime.front_door_dnd_until''),
+      0) }}'
+  - condition: template
+    value_template: '{{ states(''switch.onetouch_intercom_do_not_disturb'') in [''on'',''off'']
+      }}'
+  actions:
+  - action: switch.turn_off
+    data:
+      entity_id: switch.onetouch_intercom_do_not_disturb
+  - action: input_boolean.turn_off
+    data:
+      entity_id: input_boolean.front_door_dnd_timer_armed
+- id: front_door_dnd_countdown_sync_20261110
+  alias: Front Door DND — Countdown display sync
+  mode: restart
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.front_door_dnd_timer_armed
+    - input_datetime.front_door_dnd_until
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.front_door_dnd_timer_armed
+        state: 'on'
+      - condition: template
+        value_template: '{{ as_timestamp(states(''input_datetime.front_door_dnd_until''),
+          0) > as_timestamp(now()) }}'
+      sequence:
+      - action: timer.start
+        target:
+          entity_id: timer.front_door_dnd_countdown
+        data:
+          duration: '{{ (as_timestamp(states(''input_datetime.front_door_dnd_until''),
+            0) - as_timestamp(now())) | int }}'
+    default:
+    - action: timer.cancel
+      target:
+        entity_id: timer.front_door_dnd_countdown
+- id: sunday_25b7f0104067fb2d789e44f2
+  alias: Geyser on every day at 6:00 AM
+  description: Turns on the geyser socket every day at 6:00 AM, per Karthik's request.
+  triggers:
+  - trigger: time
+    at: 06:00:00
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.geyser_socket_1
+  mode: single
+- id: sunday_99e05c7fde0a5179947339d9
+  alias: Bedroom AC off at 26 and target to 28
+  description: When the bedroom room temperature reaches 26°C, turn the bedroom AC
+    off and set the bedroom target temperature to 28°C. Requested by Karthik.
+  triggers:
+  - trigger: numeric_state
+    entity_id: sensor.lumi_lumi_sensor_ht_agl02_temperature
+    above: 25.9
+  conditions: []
+  actions:
+  - action: climate.turn_off
+    target:
+      entity_id: climate.bedroom_ac
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.bedroom_target_temperature
+    data:
+      value: 28
+  mode: single
+- id: sunday_734646bb3d4f51b3a9043512
+  alias: Bedroom target to 28 when AC turns off
+  description: 'One-time completion of requested cool-to-26 run: after Auto Climate
+    finishes at 26 C and AC is off, save target28 then disable this follow-up. Never
+    changes target early or after arbitrary AC shutdowns.'
+  triggers:
+  - trigger: state
+    entity_id: input_boolean.bedroom_auto_climate
+    from: 'on'
+    to: 'off'
+  conditions:
+  - condition: state
+    entity_id: climate.bedroom_ac
+    state: 'off'
+  - condition: state
+    entity_id: input_select.bedroom_auto_climate_mode
+    state: Cool to target, then stop
+  - condition: template
+    value_template: '{{ is_number(states(''sensor.lumi_lumi_sensor_ht_agl02_temperature''))
+      and (states(''sensor.lumi_lumi_sensor_ht_agl02_temperature'') | float | round(1))
+      <= 26 and states(''input_number.bedroom_target_temperature'') | float(0) ==
+      26 }}'
+  actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.bedroom_target_temperature
+    data:
+      value: 28
+  - action: automation.turn_off
+    target:
+      entity_id: automation.bedroom_target_to_28_when_ac_turns_off
+    data:
+      stop_actions: false
+  mode: single

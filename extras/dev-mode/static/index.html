@@ -1,0 +1,139 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Sunday / Studio</title><style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#111a2a;--line:#263449;--ink:#eef4f6;--mute:#91a4b6;--cyan:#85ead0;--green:#85ead0;--amber:#f4cd91;--red:#ff9c9c}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:var(--bg);color:var(--ink);font:clamp(14px,1.15vw,22px)/1.5 system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.app{height:100vh;height:100dvh;width:100%;padding:clamp(12px,2vw,36px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(12px,1.6vw,28px)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0}.identity{display:flex;align-items:center;gap:12px}.orb{width:38px;height:38px;border:1px solid #85ead078;border-radius:12px;background:#163d3b;color:var(--cyan);display:grid;place-items:center;font-weight:650;font-size:24px}.brand{font-size:clamp(20px,1.8vw,32px);font-weight:600;letter-spacing:-1px}.brand small{font-size:.45em;color:var(--mute);font-weight:400;letter-spacing:1.8px;text-transform:uppercase;margin-left:12px}.statuses{display:flex;align-items:center;gap:14px;min-width:0}.pill{display:flex;align-items:center;gap:7px;color:var(--mute);font-size:.8em;white-space:nowrap}.dot{height:7px;width:7px;border-radius:50%;background:var(--green);flex:none}.dot.amber{background:var(--amber)}.pulse{animation:pulse 1.5s infinite}@keyframes pulse{50%{opacity:.35}}.mono{font-family:ui-monospace,monospace}.main{display:grid;grid-template-columns:minmax(0, .85fr) minmax(0,1.25fr);gap:clamp(12px,1.6vw,28px);min-height:0;min-width:0}.card{border:1px solid var(--line);border-radius:18px;background:var(--panel);min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column}.card>h2{margin:0;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;font-size:.78em;font-weight:500;color:var(--mute);letter-spacing:.8px}.card>h2 b{font-weight:550;color:var(--ink)}.grow{flex:1}.tag{font-size:.85em;letter-spacing:0;color:var(--mute)}.chat{flex:1;min-height:0;overflow:auto;padding:20px;scrollbar-width:thin;scrollbar-color:#3c5064 transparent;display:flex;flex-direction:column;gap:16px}.chat>:first-child{margin-top:auto}.msg{flex-shrink:0;max-width:100%;overflow-wrap:anywhere;font-size:1em;line-height:1.65}.msg .who{font-size:.65em;text-transform:uppercase;letter-spacing:1.6px;color:var(--cyan);margin-bottom:6px}.msg.you{align-self:flex-end;border:1px solid #354658;background:#1c2c3e;border-radius:14px 14px 3px 14px;padding:12px 16px;max-width:92%}.msg.you .who{color:var(--mute)}.tx{white-space:pre-wrap}.msg code{font-size:.85em;color:var(--cyan)}.step{flex-shrink:0;display:flex;gap:10px;align-items:center;padding:9px 12px;border-left:2px solid #395363;background:#0e1725;border-radius:0 8px 8px 0;min-width:0;color:var(--mute);font-size:.75em}.ic{color:var(--cyan);flex:none}.ic.edit{color:var(--amber)}.step .t{min-width:0;overflow:hidden}.step code{font:inherit;display:inline;overflow-wrap:anywhere}.step small{display:block;font-size:.85em;color:#6e859b}.a{color:var(--green)}.d{color:var(--red)}.board{flex:1;min-width:0;min-height:0;position:relative;overflow:hidden;background:#0b1020}.stage{position:absolute;inset:0;overflow:hidden}#disp{position:absolute;border:0;display:none;transform-origin:top left;background:#0b1020}.empty{position:absolute;inset:0;display:grid;place-content:center;padding:24px;text-align:center;color:var(--mute)}.empty strong{font-size:1.8em;font-weight:450;letter-spacing:-1px;color:var(--ink)}.empty small{margin-top:10px}.display-tools{display:flex;align-items:center;gap:8px}.quiet{border:1px solid var(--line);background:transparent;color:var(--mute);border-radius:7px;padding:4px 9px;font-size:inherit}.quiet:hover{color:var(--ink);border-color:var(--mute)}.voice{display:flex;align-items:center;gap:18px;min-width:0;padding:16px 20px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}.voice-label{min-width:90px;color:var(--cyan);font-size:.75em;display:flex;align-items:center;gap:8px}.compose{flex:1;min-width:0}.heard{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85em;color:var(--cyan)}.heard:empty{display:none}.heard.part{color:var(--mute)}.say-in{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);padding:3px 0;font-size:1em}.say-in::placeholder{color:#91a4b6}.hint{display:block;font-size:.65em;color:var(--mute);margin-top:3px}.send{background:var(--cyan);color:#0b2727;border:0;border-radius:10px;padding:10px 16px;font-weight:600}.cmds{display:flex;align-items:center;gap:10px;font-size:.75em}#wave{display:none}#thr{max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#speech{color:var(--cyan)}.fullscreen .main{grid-template-columns:1fr}.fullscreen .conversation{display:none}
+@media(max-width:1100px){.brand small{display:block;margin:0;letter-spacing:1.5px;font-size:10px}.statuses{gap:10px}#conn,#timer{display:none}.card>h2{padding:12px 14px}.chat{padding:14px;gap:12px}.voice{padding:12px 14px;gap:12px}.voice-label{min-width:70px}.app{gap:12px}.tag{font-size:10px}}
+@media(max-width:650px){body{font-size:14px}.main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr)}.top{gap:8px}.statuses{gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{font-size:10px}#work{display:none}.brand{font-size:20px}.orb{width:30px;height:30px;font-size:18px}.voice-label,.cmds .quiet{display:none}.hint{font-size:10px}.fullscreen .main{grid-template-rows:1fr}.app{padding:10px;gap:10px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+.top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px}.usage{display:flex;justify-content:center;gap:18px;min-width:0}.quota{min-width:115px;max-width:210px;flex:1;font-size:12px}.quota-head{display:flex;justify-content:space-between;gap:10px;color:var(--mute)}.quota-head strong{color:var(--cyan);font-weight:550}.quota-track{height:3px;background:#27394b;border-radius:6px;margin:5px 0}.quota-track i{display:block;height:100%;background:var(--cyan);border-radius:6px}.quota-reset{font-size:10px;color:var(--mute);white-space:nowrap}.quota.low strong{color:var(--amber)}.quota.low i{background:var(--amber)}.quota.stale{opacity:.6}.quota-pending{font-size:12px;color:var(--mute)}.statuses{gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:300px}#timer,#conn,#work{display:none}.statuses .pill{font-size:11px}#browser-fullscreen{font-size:12px}.brand small{display:block;margin:0;font-size:10px}
+@media(min-width:1450px){.quota{font-size:18px;max-width:260px}.quota-reset{font-size:14px}.statuses .pill{font-size:15px}#browser-fullscreen{font-size:16px}.brand small{font-size:12px}.usage{gap:30px}}
+@media(max-width:800px){.top{grid-template-columns:auto 1fr}.usage{grid-row:2;grid-column:1/-1;justify-content:stretch}.quota{max-width:none}.statuses{max-width:240px}.app{gap:10px}}
+
+body.presentation .app{padding:0;gap:0;grid-template-rows:minmax(0,1fr)}
+body.presentation .app>.top,body.presentation .voice,body.presentation .conversation{display:none}
+body.presentation .main{grid-template-columns:1fr;grid-template-rows:1fr;gap:0}
+body.presentation .main>.card{border:0;border-radius:0}
+body.presentation .main>.card>h2{position:absolute;right:12px;top:10px;z-index:5;padding:5px;background:#0b102080;border:0;border-radius:8px;opacity:.15;transition:opacity .2s}
+body.presentation .main>.card>h2:hover{opacity:1}
+body.presentation .main>.card>h2>b,body.presentation #dtag,body.presentation #scale{display:none}
+</style><div class="app">
+<header class="top"><div class="identity"><div class="orb">s.</div><div class="brand">Sunday<small>Development studio</small></div></div><div class="usage" id="usage" aria-live="polite"><span class="quota-pending">Usage · connecting…</span></div><div class="statuses"><button class="quiet" id="browser-fullscreen" aria-label="Fullscreen browser">Fullscreen ⛶</button><span class="pill" id="conn">Connecting…</span><span class="pill" id="mode">Dev mode</span><span class="pill" id="speech">Voice on</span><span class="pill" id="work"><span class="dot"></span> Codex · idle</span><span class="pill mono" id="timer">00:00:00</span></div></header>
+<section class="main"><div class="card conversation"><h2><b>Conversation</b><span class="grow"></span><span class="tag" id="thr">Codex</span></h2><div class="chat" id="chat"></div></div><div class="card"><h2><b>Canvas</b><span class="tag" id="dtag">Live workspace</span><span class="grow"></span><div class="display-tools"><span class="tag" id="scale">Fit</span><button class="quiet" id="expand" aria-label="Expand canvas">Expand ↗</button></div></h2><div class="board" id="board"><div class="stage"><iframe id="disp" sandbox="allow-scripts" title="Codex canvas"></iframe></div><div class="empty" id="empty"><strong>A little space to think.</strong><small>Diagrams, ideas, and what we’re building.</small></div></div></div></section>
+<footer class="voice"><div class="voice-label"><span class="dot pulse"></span> Voice ready</div><canvas id="wave" width="480" height="120"></canvas><div class="compose"><div class="heard" id="heard" aria-live="polite"></div><input id="say" class="say-in" autocomplete="off" aria-label="Message Codex" placeholder="Ask, build, or think out loud…"><small class="hint" id="hint">Enter to send · Esc to interrupt</small></div><div class="cmds"><button class="quiet" id="interrupt">Stop</button><button class="send" id="send" aria-label="Send message">Send ↑</button></div></footer></div>
+<script>
+const Q=new URLSearchParams(location.search),TOKEN=Q.get('t')||'';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* ---------- chat ---------- */
+const chat=$('chat'),MAXKIDS=40;
+function follow(){requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight})}
+function add(el){chat.appendChild(el);while(chat.children.length>MAXKIDS)chat.removeChild(chat.firstChild);follow();return el}
+function div(cls,html){const d=document.createElement('div');d.className=cls;d.innerHTML=html;return d}
+const items={};            // item id -> {el}
+let working=false;
+function diffStats(d){let a=0,r=0;String(d||'').split('\n').forEach(l=>{if(l[0]==='+'&&l.slice(0,3)!=='+++')a++;else if(l[0]==='-'&&l.slice(0,3)!=='---')r++});return[a,r]}
+const msgEl=(who)=>div('msg',`<div class="who">${who}</div><span class="tx"></span>`);
+function onItem(item,done){
+  const id=item.id;let rec=items[id];
+  if(['userMessage','reasoning','functionCallOutput','hookPrompt'].includes(item.type))return;
+  if(item.type==='agentMessage'){
+    if(!rec)rec=items[id]={el:add(msgEl('Codex'))};
+    if(done&&item.text)rec.el.querySelector('.tx').textContent=item.text;return}
+  if(item.type==='plan'){if(!rec)rec=items[id]={el:add(msgEl('Plan'))};rec.el.querySelector('.tx').textContent=item.text||'';return}
+  if(item.type==='commandExecution'){
+    const cmd=item.command||'';
+    if(!rec)rec=items[id]={el:add(div('step',''))};
+    const fail=done&&item.exitCode!=null&&item.exitCode!==0;
+    rec.el.innerHTML=`<span class="ic ${done?(fail?'edit':'ok'):'run'}">${done?(fail?'!':'✓'):'▶'}</span><div class="t">${done?'Ran':'Running'} <code>${esc(cmd.slice(0,120))}</code><small>${done?(item.exitCode!=null?'exit '+item.exitCode:'')+(item.durationMs!=null?' · '+(item.durationMs/1000).toFixed(1)+' s':''):'in progress…'}</small></div>`;
+    return}
+  if(item.type==='fileChange'){
+    const ch=item.changes||[];if(!rec)rec=items[id]={el:add(div('step',''))};
+    let a=0,r=0;ch.forEach(c=>{const[x,y]=diffStats(c.diff);a+=x;r+=y});
+    const names=ch.map(c=>(c.path||c.filePath||'?').split('/').pop());
+    rec.el.innerHTML=`<span class="ic ${done?'ok':'edit'}">${done?'✓':'✎'}</span><div class="t">${done?'Edited':'Editing'} <code>${esc(names.join(', ')||'files')}</code><small class="diff"><span class="a">+${a}</span> <span class="d">−${r}</span> · ${ch.length} file${ch.length===1?'':'s'}</small></div>`}
+}
+function setWorking(w){working=w;$('work').innerHTML=w?'<span class="dot cyan pulse"></span> Codex · working':'<span class="dot"></span> Codex · idle'}
+
+/* ---------- websocket ---------- */
+let ws,retry=1000;
+function conn(txt,cls){$('conn').innerHTML=`<span class="dot ${cls||''}"></span> ${txt}`}
+function connect(){
+  ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/ws?t='+encodeURIComponent(TOKEN));
+  ws.onopen=()=>{retry=1000;conn('Bridge connected','')};
+  ws.onclose=()=>{conn('Reconnecting…','amber');setTimeout(connect,retry);retry=Math.min(retry*2,15000)};
+  ws.onmessage=e=>handle(JSON.parse(e.data));
+}
+function handle(m){
+  if(m.type==='usage'){usageState=m;renderUsage();return}
+  if(m.type==='speech'){$('speech').textContent=m.error|| (m.speaking?'Codex speaking · mic muted':'Voice on');return}
+  if(m.type==='status'){conn(m.codex==='connected'?'Codex connected':'Codex offline',m.codex==='connected'?'':'amber');if(m.thread)$('thr').textContent='session '+m.thread.slice(0,8);return}
+  if(m.type==='display'){const f=$('disp');f.src='/display?t='+encodeURIComponent(TOKEN)+'&v='+m.v;f.style.display='block';fitCanvas();$('empty').style.display='none';$('dtag').textContent='Live';return}
+  if(m.type==='devmode'){$('mode').innerHTML=!m.on?'<span class="dot amber"></span> Dev mode off':m.listening?'<span class="dot pulse"></span> Listening continuously':'<span class="dot amber"></span> Dev mode · mic paused';
+    if(!m.listening)$('heard').textContent='';$('hint').textContent=m.listening?'Say “end dev mode” to finish · “stop listening” to pause':'Press Enter to send · Esc interrupts';return}
+  if(m.type==='heard'){const h=$('heard');h.textContent='“'+m.text+'”';h.classList.toggle('part',!m.final);return}
+  if(m.type==='you'){add(div('msg you','<div class="who"><span class="mic">🎙 you, by voice</span></div>'+esc(m.text)));return}
+  if(m.type==='thread'){$('thr').textContent='session '+m.id.slice(0,8);return}
+  if(m.type==='error'){add(div('msg','<div class="who">Error</div>'+esc(m.message)));return}
+  if(m.type!=='codex')return;
+  const p=m.params||{};
+  switch(m.method){
+    case 'turn/started':setWorking(true);break;
+    case 'turn/completed':setWorking(false);break;
+    case 'item/started':onItem(p.item||{},false);break;
+    case 'item/completed':onItem(p.item||{},true);break;
+    case 'item/agentMessage/delta':{let r=items[p.itemId];if(!r)r=items[p.itemId]={el:add(msgEl('Codex'))};r.el.querySelector('.tx').textContent+=p.delta||'';follow();break}
+    case 'error':add(div('msg','<div class="who">Error</div>'+esc(JSON.stringify(p.error||p).slice(0,300))));break;
+  }
+}
+const inp=$('say');
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&inp.value.trim()&&ws&&ws.readyState===1){const t=inp.value.trim();
+    add(div('msg you','<div class="who"><span class="mic">⌨ you</span></div>'+esc(t)));ws.send(JSON.stringify({type:'say',text:t}));inp.value=''}
+  if(e.key==='Escape'&&ws&&ws.readyState===1)ws.send(JSON.stringify({type:'interrupt'}));
+});
+if(!TOKEN)add(div('msg','<div class="who">Setup</div>Open this page with <code>?t=&lt;token&gt;</code> in the address.'));
+
+/* ---------- decor: waveform (calm when idle) + session timer ---------- */
+let s=0;setInterval(()=>{s++;const f=n=>String(n).padStart(2,'0');$('timer').textContent=`${f(Math.floor(s/3600))}:${f(Math.floor(s%3600/60))}:${f(s%60)}`},1000);
+let usageState=null;
+function resetLabel(window){
+ if(!window.resetsAt)return 'Reset time unavailable';
+ const date=new Date(window.resetsAt*1000),mins=Math.ceil((date-Date.now())/60000);
+ if(mins<=0)return 'Reset due · refreshing';
+ if(window.windowDurationMins<1440)return 'Resets in '+(mins>=60?Math.floor(mins/60)+'h ':'')+(mins%60)+'m';
+ return 'Resets '+date.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})+' '+date.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+}
+function renderUsage(){
+ if(!usageState)return;
+ const stale=usageState.stale||Date.now()/1000-usageState.updatedAt>125;
+ if(!usageState.available){$('usage').innerHTML='<span class="quota-pending">Usage limits unavailable</span>';return}
+ $('usage').innerHTML=usageState.windows.map(w=>`<div class="quota ${w.remainingPercent<=20?'low':''} ${stale?'stale':''}" title="${esc(w.label)} allowance remaining. ${esc(resetLabel(w))}. ${stale?'Last known data; reconnecting.':'Reported by Codex account limits.'}"><div class="quota-head"><span>${esc(w.label)}</span><strong>${Math.round(w.remainingPercent)}% left</strong></div><div class="quota-track"><i style="width:${Math.max(0,Math.min(100,w.remainingPercent))}%"></i></div><div class="quota-reset">${stale?'Last known · ':''}${esc(resetLabel(w))}</div></div>`).join('');
+}
+setInterval(renderUsage,30000);
+function fitCanvas(){
+ const box=$('board'),f=$('disp'),w=box.clientWidth,h=box.clientHeight;
+ if(!w||!h)return;
+ const fh=document.body.classList.contains('presentation')?630:800;
+ const scale=Math.min(w/1120,h/fh);
+ f.style.width='1120px';f.style.height=fh+'px';
+ f.style.transform='scale('+scale+')';
+ f.style.left=((w-1120*scale)/2)+'px';f.style.top=((h-fh*scale)/2)+'px';
+ $('scale').textContent='Fit '+Math.round(scale*100)+'%';
+}
+function enterFullscreen(){const el=document.documentElement;const fn=el.requestFullscreen||el.webkitRequestFullscreen;if(fn){Promise.resolve(fn.call(el)).catch(()=>{});}}
+$('browser-fullscreen').onclick=enterFullscreen;
+document.addEventListener('fullscreenchange',()=>{$('browser-fullscreen').textContent=document.fullscreenElement?'Fullscreen ✓':'Fullscreen ⛶';fitCanvas()});
+document.addEventListener('keydown',e=>{if(e.key==='f'&&document.activeElement!==inp)enterFullscreen()});
+new ResizeObserver(fitCanvas).observe($('board'));
+$('expand').onclick=()=>{document.body.classList.toggle('presentation');document.body.classList.toggle('fullscreen');$('expand').textContent=document.body.classList.contains('fullscreen')?'Restore ↙':'Expand ↗';fitCanvas()};
+$('send').onclick=()=>inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));
+$('interrupt').onclick=()=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:'interrupt'}))};
+document.body.classList.remove('presentation','fullscreen');
+$('expand').textContent='Expand ↗';
+document.addEventListener('keydown',e=>{if(e.key==='p'&&document.activeElement!==inp){document.body.classList.toggle('presentation');fitCanvas()}});
+connect();
+</script>
+</html>

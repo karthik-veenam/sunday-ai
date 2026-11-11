@@ -1,0 +1,25 @@
+[Unit]
+Description=Sunday 2.0 persistent assistant brain
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=djpi
+WorkingDirectory=/home/djpi/sunday2
+ExecStart=/home/djpi/sunday2-env/bin/python -u main.py
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/djpi/sunday2
+InaccessiblePaths=/dev/snd /home/djpi/sunday /home/djpi/momo-env
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

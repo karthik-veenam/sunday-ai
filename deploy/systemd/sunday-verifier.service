@@ -1,0 +1,16 @@
+[Unit]
+Description=Sunday wake verifier (whisper.cpp tiny.en q5_1, 127.0.0.1:8183)
+After=network.target
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday-stt-verifier
+Environment=SUNDAY_EARLY_STOP=1
+Environment="SUNDAY_ALIASES=sunday|some men|some me|sada|some day|send it|summit|someday|some days|somebody|something|some may"
+ExecStart=/home/djpi/sunday-stt-verifier/build/bin/whisper-server -m /home/djpi/sunday-stt-verifier/ggml-tiny.en-q5_1.bin --host 127.0.0.1 --port 8183 -t 2 -bo 1 -bs 1 -nf -l en
+Restart=on-failure
+RestartSec=3
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

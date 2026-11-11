@@ -1,0 +1,29 @@
+{
+  "title": "Sunday Costs",
+  "views": [
+    {
+      "title": "Overview",
+      "path": "overview",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-cost-card",
+          "view": "overview"
+        }
+      ],
+      "icon": "mdi:chart-donut"
+    },
+    {
+      "title": "Usage & models",
+      "path": "usage",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-cost-card",
+          "view": "details"
+        }
+      ],
+      "icon": "mdi:chart-line"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+[Unit]
+Description=Sunday golden v9 silent PCM inference bridge
+After=local-fs.target
+
+[Service]
+Type=simple
+User=djpi
+Group=djpi
+WorkingDirectory=/home/djpi/sunday-wake-lab
+ExecStartPre=/usr/bin/rm -f /home/djpi/sunday-wake-lab/run/legacy.sock
+ExecStart=/home/djpi/momo-env/bin/python -u /home/djpi/sunday-wake-lab/legacy_bridge.py --socket /home/djpi/sunday-wake-lab/run/legacy.sock
+Restart=on-failure
+RestartSec=3
+Nice=10
+CPUQuota=50%
+MemoryMax=512M
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/djpi/sunday-wake-lab/run
+InaccessiblePaths=/home/djpi/sunday
+RestrictAddressFamilies=AF_UNIX
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

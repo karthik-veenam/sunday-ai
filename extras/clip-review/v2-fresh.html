@@ -1,0 +1,10 @@
+<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sunday V2 — new recording</title>
+<style>body{font:16px system-ui;background:#101827;color:#eef2ff;max-width:850px;margin:24px auto;padding:0 16px}article{background:#1c2940;border-radius:12px;padding:16px;margin:14px 0}audio{width:100%;margin-top:10px}small{color:#b7c3d9}button{padding:8px 12px;cursor:pointer}</style>
+<h1>Sunday V2 — new recording</h1><p>Threshold <b>0.9</b> · 2-second cooldown · one genuine Sunday call reported by you.</p>
+<p id="summary">Loading results…</p><p>These are model activations. Listen to check which activation, if any, matches the genuine Sunday call. Each excerpt includes 3.2 seconds before the trigger and 1.8 seconds after it.</p>
+<details><summary>Listen to the full recording</summary><audio controls preload="none" id="full"></audio></details><main id="events"></main>
+<script>
+const base=location.pathname.replace(/\/$/,'');document.getElementById('full').src=base+'/full-audio';
+const stamp=t=>Math.floor(t/60)+':'+(t%60).toFixed(2).padStart(5,'0');
+fetch(base+'/results').then(r=>r.json()).then(d=>{if(!d.ready){document.getElementById('summary').textContent='Evaluation is still running. Refresh shortly.';return}const f=d.files[0];document.getElementById('summary').textContent=f.events.length+' activations in '+stamp(f.seconds)+'.';f.events.forEach((e,i)=>{const a=document.createElement('article');const h=document.createElement('b');h.textContent='#'+(i+1)+' · '+stamp(e.time_s)+' · score '+e.score.toFixed(6);a.appendChild(h);const audio=document.createElement('audio');audio.controls=true;audio.preload='none';audio.src=base+'/audio/'+i;a.appendChild(audio);document.getElementById('events').appendChild(a)});});
+</script>

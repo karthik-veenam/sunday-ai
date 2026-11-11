@@ -1,0 +1,21 @@
+[Unit]
+Description=Sunday Stack-chan audio gateway (microphone/speaker bridge to the unchanged Sunday brain)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday-audio
+Environment=SUNDAY_AUDIO_HOME=/home/djpi/sunday-audio
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/djpi/sunday-audio/venv/bin/python -u gateway/gateway.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+# NOTE: deliberately NOT enabled by install.sh. `sunday-audio stackchan` enables it, `sunday-audio airhug` disables it.
+[Install]
+WantedBy=multi-user.target

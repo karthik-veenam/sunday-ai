@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Sunday's body connection every 30 seconds
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=30
+AccuracySec=2
+Unit=sunday-body-recovery.service
+
+[Install]
+WantedBy=timers.target

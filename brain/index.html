@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sunday</title><style>
+:root{color-scheme:dark;font-family:system-ui;background:#10141c;color:#e8edf5}body{max-width:760px;margin:5vh auto;padding:24px}h1{font-weight:500;letter-spacing:-2px;font-size:48px}small{color:#a5b1c4}input,button{background:#1c2432;color:inherit;border:1px solid #34425a;padding:12px;border-radius:10px;font:inherit}input{flex:1;min-width:0}button{cursor:pointer}form,.connect{display:flex;gap:8px;margin:20px 0}.bubble{padding:16px 20px;border-radius:14px;margin:12px 0;white-space:pre-wrap;background:#1a2435}.user{background:#273550}.status{color:#9db5da}#token{font-size:14px}
+</style><h1>Sunday<span style="color:#7f9fe2">.</span></h1><small id="health">Connecting…</small>
+<div class="connect"><input id="token" type="password" placeholder="Connection token" autocomplete="off"><button id="connect">Connect</button></div>
+<div id="messages"></div><p class="status" id="status"></p>
+<form id="form"><input id="text" placeholder="Talk to Sunday" autocomplete="off" required><button>Send</button></form>
+<script>
+let socket,conversation=crypto.randomUUID(),requestId;
+const el=id=>document.getElementById(id);
+fetch('/health').then(r=>r.json()).then(h=>el('health').textContent=h.status==='ready'?'Ready · Sunday 2.0':'Connecting…');
+function bubble(text,kind=''){const d=document.createElement('div');d.className='bubble '+kind;d.textContent=text;el('messages').append(d);return d}
+el('connect').onclick=async()=>{try{const r=await fetch('/v1/state',{headers:{Authorization:'Bearer '+el('token').value}});if(!r.ok)throw Error();el('status').textContent='Connected';}catch{el('status').textContent='Check the connection token.'}};
+el('form').onsubmit=async e=>{e.preventDefault();if(socket?.readyState===1){el('status').textContent='Sunday is still responding.';return}const text=el('text').value;el('text').value='';bubble(text,'user');const reply=bubble('');requestId=crypto.randomUUID();el('status').textContent='Thinking…';
+// Browser WebSocket authentication uses a short authenticated HTTP turn instead of URL tokens.
+try{const r=await fetch('/v1/chat',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+el('token').value},body:JSON.stringify({text,conversation_id:conversation,request_id:requestId,source:'web',stream:true})});if(!r.ok)throw Error('Unable to connect');const reader=r.body.getReader(),decoder=new TextDecoder();let pending='';while(true){const {value,done}=await reader.read();if(done)break;pending+=decoder.decode(value,{stream:true});let newline;while((newline=pending.indexOf('\n'))>=0){const item=JSON.parse(pending.slice(0,newline));pending=pending.slice(newline+1);if(item.type==='assistant_text'){reply.textContent+=item.text;el('status').textContent=''}else if(item.type==='tool_start'){el('status').textContent='Working…'}else if(item.type==='final'){reply.textContent=item.text;conversation=item.conversation_id;el('status').textContent=item.continue_conversation?'Ready for your reply':''}else if(item.type==='error'){throw Error('Sunday could not finish that response.')}}}}catch(error){reply.textContent=error.message;el('status').textContent=''} };
+</script></html>

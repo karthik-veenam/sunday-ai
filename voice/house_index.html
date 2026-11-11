@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Vasu Nilayam</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#0b0d12">
+<style>
+  :root{--bg:#0b0d12;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);
+    --text:#e8e9ec;--dim:#8a8f99;--accent:#60a5fa;--on:#34d399;--star:#fbbf24;--danger:#f87171}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding:14px;padding-bottom:70px;min-height:100vh}
+  .page{max-width:760px;margin:0 auto}
+  h1{font-size:1.25rem;margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sub{color:var(--dim);font-size:.8rem;margin:4px 0 16px}
+  .topbar{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+  .icon-btn-lg{font-size:1.2rem;cursor:pointer;padding:6px 10px;border-radius:10px;background:var(--card);border:1px solid var(--border);line-height:1;flex-shrink:0}
+  .icon-btn-lg:active{background:rgba(255,255,255,.12)}
+  .whoami{margin-left:auto;font-size:.78rem;color:var(--dim);cursor:pointer;padding:4px 2px;flex-shrink:0}
+  .section-label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:22px 0 8px}
+
+  .sleep-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 0;
+    border-radius:14px;border:1px solid rgba(167,139,250,.35);background:rgba(167,139,250,.12);
+    color:#c4b5fd;font-size:.92rem;font-weight:600;margin-bottom:14px;cursor:pointer}
+  .sleep-btn:active{transform:scale(.98);background:rgba(167,139,250,.22)}
+
+  .room{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden}
+  .room-head{display:flex;align-items:center;gap:4px;padding:12px 12px 10px;flex-wrap:wrap}
+  .room-title{font-size:1rem;font-weight:600;flex:1;min-width:0;color:var(--text);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .icon-btn{cursor:pointer;font-size:1rem;opacity:.4;padding:4px;user-select:none;border-radius:8px;flex-shrink:0}
+  .icon-btn.on{opacity:1}
+  .icon-btn:active{opacity:.7}
+  .bulkrow{display:flex;gap:8px;padding:0 12px 12px;flex-wrap:wrap}
+  .bulk-btn{flex:1;min-width:90px;padding:9px 0;border-radius:12px;border:1px solid var(--border);
+    background:rgba(255,255,255,.04);color:var(--text);font-size:.82rem;font-weight:600;cursor:pointer}
+  .bulk-btn:active{transform:scale(.96);background:rgba(255,255,255,.1)}
+  .bulk-btn.on-btn{color:#fbbf24}
+  .bulk-btn.off-btn{color:var(--dim)}
+  .chev{color:var(--dim);font-size:.75rem;transition:transform .15s;padding:6px;cursor:pointer;flex-shrink:0}
+  .room.collapsed .chev{transform:rotate(-90deg)}
+  .room.collapsed .device-grid,.room.collapsed .bulkrow{display:none}
+
+  .reorder{display:flex;flex-direction:column;gap:0;flex-shrink:0}
+  .reorder span{font-size:.6rem;line-height:1;opacity:.4;padding:2px 4px;cursor:pointer}
+  .reorder span:active{opacity:.9}
+
+  .device-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:9px;padding:0 10px 12px}
+  .empty{color:var(--dim);font-size:.82rem;padding:0 12px 12px}
+
+  .tile{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.075);border-radius:16px;
+    padding:11px 10px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;
+    min-height:84px;touch-action:manipulation;user-select:none;transition:background .12s,border-color .12s}
+  .tile.on{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+  .tile.fan.on{background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.35)}
+  .tile:active{transform:scale(.95)}
+  .tile.screen{cursor:default}
+  .tile-top{display:flex;justify-content:space-between;align-items:center}
+  .tile-icon{font-size:1.35rem;line-height:1}
+  .tile-star{font-size:.8rem;opacity:.3;padding:3px;line-height:1}
+  .tile-star.on{opacity:1}
+  .tile-name{font-size:.8rem;font-weight:600;color:#c9cbd1;line-height:1.2;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .tile.on .tile-name{color:#fff}
+  .tile-edit{position:absolute;bottom:6px;right:8px;font-size:.68rem;opacity:.3;padding:3px}
+  .tile-sub{font-size:.68rem;color:var(--dim);margin-top:-4px}
+
+  .brightness{width:100%;margin:0;accent-color:#fbbf24}
+  .speeds{display:flex;gap:4px}
+  .speeds button{flex:1;padding:4px 0;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+    color:var(--dim);font-size:.65rem}
+  .speeds button.active{background:rgba(34,211,238,.18);border-color:#22d3ee;color:#22d3ee}
+
+  .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+  .backdrop.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;left:0;height:100%;width:86%;max-width:360px;background:#11131a;
+    border-right:1px solid var(--border);transform:translateX(-100%);transition:transform .2s;z-index:41;
+    padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .drawer.open{transform:translateX(0)}
+  .drawer h2{font-size:1rem;margin:4px 0 14px}
+  .drawer-close{float:right;cursor:pointer;color:var(--dim);font-size:1.3rem;padding:4px}
+  .drow{display:flex;align-items:center;gap:8px;padding:11px 8px;border-top:1px solid var(--border);font-size:.9rem;cursor:pointer}
+  .drow:first-child{border-top:none}
+  .drow:active{background:rgba(255,255,255,.04)}
+  .drow input{background:none;border:none;color:var(--text);font-size:.85rem;flex:1;min-width:0;cursor:text}
+  .drow-count{color:var(--dim);font-size:.75rem}
+  .drow-chevron{color:var(--dim)}
+  select.room-move{background:#14161c;color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:.72rem;padding:3px 4px}
+  .addroom{display:block;width:100%;padding:12px;border-radius:12px;border:1px dashed var(--border);background:none;color:var(--dim);font-size:.85rem;margin-top:10px}
+
+  .room-screen-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .manage-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 12px;margin-bottom:14px}
+  .manage-panel input.rename{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text);
+    padding:9px;width:100%;margin-bottom:6px;font-size:.9rem}
+
+  .claim{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+  .claim-rooms{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .claim-rooms button{padding:9px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:.85rem}
+
+  @media (max-width:360px){
+    .device-grid{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <span class="drawer-close" onclick="closeDrawer()">✕</span>
+  <h2>All Rooms</h2>
+  <div id="drawer-rooms"></div>
+  <button class="addroom" onclick="addRoom()">+ Add Room</button>
+</div>
+
+<div class="topbar">
+  <span class="icon-btn-lg" onclick="goHome()">🏠</span>
+  <span class="icon-btn-lg" onclick="openDrawer()">☰</span>
+  <h1 id="page-title">Vasu Nilayam</h1>
+  <span class="whoami" id="whoami" onclick="changeIdentity()"></span>
+</div>
+<div class="sub" id="page-sub">Your room and favorites. Tap ☰ for every room in the house.</div>
+
+<div id="main"></div>
+</div>
+
+<script>
+let state = {devices: [], rooms: [], users: {}};
+let collapsed = JSON.parse(localStorage.getItem('house_collapsed') || '{}');
+let myName = localStorage.getItem('house_user_name') || '';
+let view = {type: 'home'};      // {type:'home'} | {type:'room', id}
+let manageOpen = false;
+
+// Optimistic overlay: instant UI feedback, real device call happens in the background.
+let overrides = {};           // suffix -> {data, until}
+const OPTIMISTIC_MS = 3000;
+
+function effective(d){
+  const o = overrides[d.suffix];
+  if(o && Date.now() < o.until) return Object.assign({}, d, o.data);
+  return d;
+}
+
+function myUser(){
+  return state.users[myName] || {room: null, fav_devices: [], fav_rooms: []};
+}
+function isFavDevice(suffix){ return (myUser().fav_devices || []).includes(suffix); }
+function isFavRoom(id){ return (myUser().fav_rooms || []).includes(id); }
+
+async function refresh(){
+  try{
+    const [s, u] = await Promise.all([
+      fetch('/api/state').then(r=>r.json()),
+      fetch('/api/users').then(r=>r.json())
+    ]);
+    state = s; state.users = u;
+    render();
+  }catch(e){}
+}
+
+function roomDevices(roomId){
+  return state.devices.filter(d => d.room === roomId).sort((a,b)=>(a.order||0)-(b.order||0));
+}
+
+const TYPE_ICON = {switch: '💡', dimmer: '💡', fan: '🌀', screen: '⬛'};
+const TYPE_LABEL = {switch: 'Light', dimmer: 'Dimmable', fan: 'Fan', screen: 'Screen'};
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+function tile(dRaw){
+  const d = effective(dRaw);
+  const icon = TYPE_ICON[d.type] || '🔌';
+  const onCls = d.on ? 'on' : '';
+  const fanCls = d.type === 'fan' ? 'fan' : '';
+  const fav = isFavDevice(d.suffix);
+  let extra = '';
+  if(d.type === 'dimmer' && d.on){
+    extra = `<input type="range" class="brightness" min="1" max="100" value="${d.brightness||50}"
+      onclick="event.stopPropagation()"
+      oninput="event.stopPropagation()"
+      onchange="event.stopPropagation(); setDevice('${d.suffix}', true, {brightness: parseInt(this.value)})">`;
+  } else if(d.type === 'fan' && d.on){
+    const sp = d.speed || 0;
+    extra = `<div class="speeds" onclick="event.stopPropagation()">
+      <button class="${sp===1?'active':''}" onclick="setDevice('${d.suffix}', true, {speed:1})">Lo</button>
+      <button class="${sp===2?'active':''}" onclick="setDevice('${d.suffix}', true, {speed:2})">Mid</button>
+      <button class="${sp===3?'active':''}" onclick="setDevice('${d.suffix}', true, {speed:3})">Hi</button>
+    </div>`;
+  } else if(d.type === 'screen'){
+    extra = `<div class="tile-sub">${d.open ? 'Open' : 'Closed'}</div>`;
+  }
+
+  const tapHandler = d.type === 'screen' ? '' : `onclick="tileTap('${d.suffix}')"`;
+
+  return `<div class="tile ${onCls} ${fanCls} ${d.type==='screen'?'screen':''}" ${tapHandler}>
+    <div class="tile-top">
+      <span class="tile-icon">${icon}</span>
+      <span class="tile-star ${fav?'on':''}" onclick="event.stopPropagation(); toggleFav('device','${d.suffix}',${!fav})">★</span>
+    </div>
+    <div class="tile-name">${esc(d.label)}</div>
+    ${extra}
+    <span class="tile-edit" onclick="event.stopPropagation(); renameDeviceViaPrompt('${d.suffix}','${esc(d.label)}')">✎</span>
+  </div>`;
+}
+
+// Instant tap feedback — short haptic buzz (where supported) + a tiny synthesized click.
+// Lazily created on first tap so it counts as a user gesture (required by browser audio policies).
+let _audioCtx = null;
+function feedback(){
+  try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+  try{
+    if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = _audioCtx;
+    if(ctx.state === 'suspended') ctx.resume();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 900;
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.045);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.05);
+  }catch(e){}
+}
+
+function tileTap(suffix){
+  const d = state.devices.find(x => x.suffix === suffix);
+  if(!d) return;
+  feedback();
+  const cur = effective(d);
+  setDevice(suffix, !cur.on);
+}
+
+function setDevice(suffix, on, extra){
+  const data = Object.assign({on}, extra || {});
+  overrides[suffix] = {data, until: Date.now() + OPTIMISTIC_MS};
+  render();
+  fetch('/api/toggle', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({suffix}, data))}).catch(()=>{});
+}
+
+function allLights(roomId, on){
+  feedback();
+  roomDevices(roomId)
+    .filter(d => d.type === 'switch' || d.type === 'dimmer')
+    .forEach(d => setDevice(d.suffix, on));
+}
+
+function sleepMode(){
+  feedback();
+  const commonRoomIds = new Set(state.rooms.filter(r => r.common_area).map(r => r.id));
+  state.devices
+    .filter(d => (d.type === 'switch' || d.type === 'dimmer') && commonRoomIds.has(d.room))
+    .forEach(d => { overrides[d.suffix] = {data: {on:false}, until: Date.now() + OPTIMISTIC_MS}; });
+  render();
+  fetch('/api/sleep', {method:'POST'}).catch(()=>{});
+}
+
+// A room's tile-grid card — used for "Your Room" and favorited rooms on the home screen.
+function roomCard(r, opts){
+  opts = opts || {};
+  const devs = roomDevices(r.id);
+  const isCollapsed = !!collapsed[r.id] && !opts.forceOpen;
+  const fav = isFavRoom(r.id);
+  const titleHtml = opts.navigate
+    ? `<span class="room-title" style="cursor:pointer" onclick="goToRoom('${r.id}')">${esc(r.label)} ›</span>`
+    : `<span class="room-title">${esc(r.label)}</span>`;
+  const reorderHtml = opts.reorder ? `<div class="reorder">
+      <span onclick="${opts.reorder.up}" style="${opts.reorder.canUp?'':'visibility:hidden'}">▲</span>
+      <span onclick="${opts.reorder.down}" style="${opts.reorder.canDown?'':'visibility:hidden'}">▼</span>
+    </div>` : '';
+  return `<div class="room ${isCollapsed?'collapsed':''}" id="room-${r.id}">
+    <div class="room-head">
+      <span class="chev" onclick="toggleCollapse('${r.id}')">▾</span>
+      ${titleHtml}
+      <span class="icon-btn ${fav?'on':''}" onclick="toggleFav('room','${r.id}',${!fav})">★</span>
+      ${reorderHtml}
+    </div>
+    ${devs.length ? `<div class="bulkrow">
+      <button class="bulk-btn on-btn" onclick="allLights('${r.id}', true)">All lights on</button>
+      <button class="bulk-btn off-btn" onclick="allLights('${r.id}', false)">All lights off</button>
+    </div>` : ''}
+    <div class="device-grid">${devs.length ? devs.map(tile).join('') : ''}</div>
+    ${devs.length ? '' : '<div class="empty">No devices</div>'}
+  </div>`;
+}
+
+function renderHomeScreen(){
+  let html = `<button class="sleep-btn" onclick="sleepMode()">🌙 Sleep Mode — turn off common-area lights (Hall, Kitchen, Dining)</button>`;
+
+  const myRoomId = myUser().room;
+  if(!myName || !myRoomId){
+    const buttons = state.rooms.slice().sort((a,b)=>a.order-b.order)
+      .map(r => `<button onclick="claimRoom('${r.id}')">${esc(r.label)}</button>`).join('');
+    html += `<div class="claim">
+      <div><strong>Which room is yours, ${esc(myName||'friend')}?</strong></div>
+      <div class="sub" style="margin:4px 0 0">Pick one — change it anytime by tapping your name above.</div>
+      <div class="claim-rooms">${buttons}</div>
+    </div>`;
+  } else {
+    const myRoom = state.rooms.find(r => r.id === myRoomId);
+    if(myRoom) html += `<div class="section-label">Your Room</div>` + roomCard(myRoom, {forceOpen:true, navigate:true});
+  }
+
+  const u = myUser();
+  const favRooms = (u.fav_rooms || []).map(id => state.rooms.find(r => r.id === id)).filter(Boolean);
+  const favDeviceIds = new Set(u.fav_devices || []);
+  const looseDevs = state.devices.filter(d => favDeviceIds.has(d.suffix) && !(u.fav_rooms||[]).includes(d.room));
+
+  html += `<div class="section-label">Your Favorites</div>`;
+  if(favRooms.length === 0 && looseDevs.length === 0){
+    html += '<div class="empty">Tap a ★ on a room or device to pin it here, just for you.</div>';
+  } else {
+    favRooms.forEach((r, i) => {
+      html += roomCard(r, {forceOpen:true, navigate:true, reorder:{
+        canUp: i>0, canDown: i<favRooms.length-1,
+        up:`reorderFavRoom('${r.id}',-1)`, down:`reorderFavRoom('${r.id}',1)`
+      }});
+    });
+    if(looseDevs.length) html += `<div class="room"><div class="device-grid">${looseDevs.map(tile).join('')}</div></div>`;
+  }
+  return html;
+}
+
+function renderRoomScreen(r){
+  const devs = roomDevices(r.id);
+  const fav = isFavRoom(r.id);
+  let html = `<div class="room-screen-head">
+    <span class="icon-btn ${fav?'on':''}" onclick="toggleFav('room','${r.id}',${!fav})">★ Favorite</span>
+    <span class="icon-btn" style="margin-left:auto" onclick="toggleManage()">${manageOpen ? 'Done' : '✎ Manage'}</span>
+  </div>`;
+
+  if(manageOpen){
+    html += `<div class="manage-panel">
+      <input class="rename" value="${esc(r.label)}" onchange="renameRoom('${r.id}', this.value)" placeholder="Room name">
+      <div class="drow" style="cursor:default">
+        <span style="flex:1">Common area <span class="droom-count">(included in house-wide Sleep Mode)</span></span>
+        <span class="icon-btn ${r.common_area?'on':''}" onclick="toggleCommonArea('${r.id}', ${!r.common_area})">${r.common_area?'ON':'OFF'}</span>
+      </div>
+      ${devs.map(d => drawerDeviceRow(d, devs)).join('')}
+      ${devs.length===0 ? `<button class="bulk-btn off-btn" style="margin-top:8px;width:100%" onclick="deleteRoom('${r.id}')">🗑 Delete this empty room</button>` : ''}
+    </div>`;
+  }
+
+  html += `<div class="room">`;
+  if(devs.length){
+    html += `<div class="bulkrow">
+      <button class="bulk-btn on-btn" onclick="allLights('${r.id}', true)">All lights on</button>
+      <button class="bulk-btn off-btn" onclick="allLights('${r.id}', false)">All lights off</button>
+    </div>
+    <div class="device-grid">${devs.map(tile).join('')}</div>`;
+  } else {
+    html += `<div class="empty">No devices in this room yet — use ☰ or Manage to move some in.</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+// ---- Manage panel row: rename / move-to-room / reorder-within-room ----
+function drawerDeviceRow(d, roomDevs){
+  const roomOptions = state.rooms.slice().sort((a,b)=>a.order-b.order)
+    .map(r => `<option value="${r.id}" ${r.id===d.room?'selected':''}>${esc(r.label)}</option>`).join('');
+  const fav = isFavDevice(d.suffix);
+  const idx = roomDevs.findIndex(x => x.suffix === d.suffix);
+  return `<div class="drow" style="cursor:default">
+    <span>${TYPE_ICON[d.type]||'🔌'}</span>
+    <input value="${esc(d.label)}" onchange="renameDevice('${d.suffix}', this.value)">
+    <select class="room-move" onchange="moveDevice('${d.suffix}', this.value)">${roomOptions}</select>
+    <span class="icon-btn ${fav?'on':''}" onclick="toggleFav('device','${d.suffix}',${!fav})">★</span>
+    <div class="reorder">
+      <span onclick="reorderDevice('${d.suffix}', -1)" style="${idx<=0?'visibility:hidden':''}">▲</span>
+      <span onclick="reorderDevice('${d.suffix}', 1)" style="${idx>=roomDevs.length-1?'visibility:hidden':''}">▼</span>
+    </div>
+  </div>`;
+}
+
+function renderDrawer(){
+  const sorted = state.rooms.slice().sort((a,b)=>a.order-b.order);
+  document.getElementById('drawer-rooms').innerHTML = sorted.map(r => {
+    const count = roomDevices(r.id).length;
+    return `<div class="drow" onclick="goToRoom('${r.id}')">
+      <span style="flex:1">${esc(r.label)}</span>
+      <span class="drow-count">${count}</span>
+      <span class="drow-chevron">›</span>
+    </div>`;
+  }).join('');
+}
+
+function render(){
+  renderDrawer();
+  document.getElementById('whoami').textContent = myName ? `👤 ${myName}` : '👤 set name';
+
+  if(view.type === 'room' && !state.rooms.find(x => x.id === view.id)){
+    view = {type: 'home'};
+  }
+
+  const main = document.getElementById('main');
+  if(view.type === 'room'){
+    const r = state.rooms.find(x => x.id === view.id);
+    document.getElementById('page-title').textContent = r.label;
+    document.getElementById('page-sub').textContent = 'Tap 🏠 to go back home, ☰ to jump to another room.';
+    main.innerHTML = renderRoomScreen(r);
+  } else {
+    document.getElementById('page-title').textContent = 'Vasu Nilayam';
+    document.getElementById('page-sub').textContent = 'Your room and favorites. Tap ☰ for every room in the house.';
+    main.innerHTML = renderHomeScreen();
+  }
+}
+
+function goHome(){ view = {type:'home'}; manageOpen = false; closeDrawer(); render(); }
+function goToRoom(id){ view = {type:'room', id}; manageOpen = false; closeDrawer(); render(); }
+function toggleManage(){ manageOpen = !manageOpen; render(); }
+
+function toggleCollapse(id){
+  collapsed[id] = !collapsed[id];
+  localStorage.setItem('house_collapsed', JSON.stringify(collapsed));
+  render();
+}
+
+function openDrawer(){
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+}
+
+function renameDeviceViaPrompt(suffix, current){
+  const label = prompt('Rename device:', current);
+  if(label) renameDevice(suffix, label);
+}
+
+async function renameDevice(suffix, label){
+  const d = state.devices.find(x=>x.suffix===suffix);
+  if(d) d.label = label;
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'device', id:suffix, patch:{label}})});
+}
+
+async function renameRoom(id, label){
+  const r = state.rooms.find(x=>x.id===id);
+  if(r) r.label = label;
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'room', id, patch:{label}})});
+}
+
+async function toggleCommonArea(id, common_area){
+  const r = state.rooms.find(x=>x.id===id);
+  if(r) r.common_area = common_area;
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'room', id, patch:{common_area}})});
+}
+
+async function moveDevice(suffix, room){
+  const d = state.devices.find(x=>x.suffix===suffix);
+  if(d) d.room = room;
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'device', id:suffix, patch:{room}})});
+}
+
+async function reorderDevice(suffix, dir){
+  const d = state.devices.find(x => x.suffix === suffix);
+  if(!d) return;
+  const sibs = roomDevices(d.room);
+  const i = sibs.findIndex(x => x.suffix === suffix);
+  const j = i + dir;
+  if(j < 0 || j >= sibs.length) return;
+  const a = sibs[i], b = sibs[j];
+  const tmp = a.order; a.order = b.order; b.order = tmp;
+  render();
+  await Promise.all([
+    fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type:'device', id:a.suffix, patch:{order:a.order}})}),
+    fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({type:'device', id:b.suffix, patch:{order:b.order}})}),
+  ]);
+}
+
+async function reorderFavRoom(id, dir){
+  const u = myUser();
+  const list = (u.fav_rooms || []).slice();
+  const i = list.indexOf(id);
+  const j = i + dir;
+  if(i < 0 || j < 0 || j >= list.length) return;
+  const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+  state.users[myName] = Object.assign({}, u, {fav_rooms: list});
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'set_fav_order', name: myName, fav_type:'room', order:list})});
+}
+
+async function toggleFav(favType, target, favorite){
+  if(!myName){ await ensureIdentity(); if(!myName) return; }
+  state.users[myName] = state.users[myName] || {room: null, fav_devices: [], fav_rooms: []};
+  const u = state.users[myName];
+  u.fav_devices = u.fav_devices || []; u.fav_rooms = u.fav_rooms || [];
+  const list = favType === 'device' ? u.fav_devices : u.fav_rooms;
+  const idx = list.indexOf(target);
+  if(favorite && idx === -1) list.push(target);
+  if(!favorite && idx !== -1) list.splice(idx, 1);
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'toggle_fav', name: myName, fav_type: favType, target, patch:{favorite}})});
+}
+
+async function deleteRoom(id){
+  if(!confirm('Delete this empty room?')) return;
+  const r = await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'delete_room', id})});
+  const j = await r.json();
+  if(!j.ok){ alert(j.error || 'Could not delete room'); return; }
+  if(view.type === 'room' && view.id === id) goHome();
+  refresh();
+}
+
+async function addRoom(){
+  const label = prompt('New room name:');
+  if(!label) return;
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'new_room', patch:{label}})});
+  refresh();
+}
+
+async function claimRoom(roomId){
+  state.users[myName] = Object.assign({}, myUser(), {room: roomId});
+  render();
+  await fetch('/api/layout', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({type:'user', id: myName, patch:{room: roomId}})});
+}
+
+function changeIdentity(){
+  const n = prompt('Your name:', myName || '');
+  if(!n) return;
+  myName = n.trim();
+  localStorage.setItem('house_user_name', myName);
+  refresh();
+}
+
+async function ensureIdentity(){
+  if(!myName){
+    const n = prompt('Welcome! What\'s your name?');
+    myName = (n || '').trim();
+    if(myName) localStorage.setItem('house_user_name', myName);
+  }
+}
+
+(async function init(){
+  await ensureIdentity();
+  await refresh();
+  setInterval(refresh, 4000);
+})();
+</script>
+</body>
+</html>

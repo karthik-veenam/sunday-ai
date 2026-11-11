@@ -1,0 +1,13 @@
+{
+  "mode": "enforce",
+  "url": "http://127.0.0.1:8184/inference",
+  "audio_ctx": 250,
+  "timeout_s": 1.5,
+  "pre_s": 1.6,
+  "post_s": 0.16,
+  "aliases": [
+    "sunday"
+  ],
+  "provider": "sherpa",
+  "enabled": true
+}

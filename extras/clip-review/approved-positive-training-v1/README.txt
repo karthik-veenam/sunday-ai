@@ -1,0 +1,1 @@
+38 original utterances plus approved noise-reduced derivatives. Keep each derivative with its original parent and session when splitting train/validation/test. All these clips are designated training data by the user.

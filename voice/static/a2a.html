@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2A Test — Sunday ↔ FitBot</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0b0b0e; color: #e2e2e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; min-height: 100vh; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 600; color: #a78bfa; margin-bottom: 6px; }
+  .subtitle { color: #6b6b7e; font-size: 12px; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: #13131a; border: 1px solid #1e1e2e; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .panel-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; }
+  .badge-sunday { background: #1e1040; color: #a78bfa; }
+  .badge-fitbot { background: #0d2010; color: #4ade80; }
+  .badge-port { background: #1a1a24; color: #6b6b7e; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: #1a1a28; border: 1px solid #2a2a3e; color: #c4c4d4; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+  .chip:hover { background: #22223a; border-color: #8b5cf6; color: #a78bfa; }
+  .chip.green:hover { border-color: #22c55e; color: #4ade80; }
+  .input-row { display: flex; gap: 8px; }
+  textarea { flex: 1; background: #0e0e16; border: 1px solid #2a2a3e; border-radius: 8px; color: #e2e2e8; padding: 10px 12px; font-size: 13px; font-family: inherit; resize: none; height: 60px; outline: none; transition: border .15s; }
+  textarea:focus { border-color: #8b5cf6; }
+  textarea.green:focus { border-color: #22c55e; }
+  button.send { padding: 0 16px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; height: 60px; }
+  button.send-purple { background: #7c3aed; color: #fff; }
+  button.send-purple:hover { background: #6d28d9; }
+  button.send-green { background: #16a34a; color: #fff; }
+  button.send-green:hover { background: #15803d; }
+  button.send:disabled { opacity: .4; cursor: default; }
+  .log { background: #0a0a10; border: 1px solid #1e1e2e; border-radius: 8px; min-height: 120px; max-height: 340px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .entry { display: flex; flex-direction: column; gap: 4px; }
+  .entry-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6b6b7e; }
+  .dir { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 4px; }
+  .dir-req { background: #1a1a28; color: #a78bfa; }
+  .dir-res { background: #0d1e0d; color: #4ade80; }
+  .dir-err { background: #1e0d0d; color: #f87171; }
+  .entry-body { background: #111118; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #c4c4d4; line-height: 1.5; font-family: 'SF Mono', 'Fira Code', monospace; white-space: pre-wrap; word-break: break-word; }
+  .latency { margin-left: auto; font-size: 11px; color: #4b4b5e; }
+  .empty { color: #4b4b5e; font-size: 12px; font-style: italic; margin: auto; text-align: center; padding: 20px 0; }
+  .agent-card { background: #0e0e16; border: 1px solid #1e1e2e; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #6b6b7e; cursor: pointer; }
+  .agent-card:hover { border-color: #2a2a3e; }
+  .agent-card summary { color: #a78bfa; font-weight: 600; cursor: pointer; outline: none; }
+  .agent-card.green summary { color: #4ade80; }
+  .agent-card pre { margin-top: 8px; color: #c4c4d4; white-space: pre-wrap; word-break: break-all; }
+  .divider { border: none; border-top: 1px solid #1e1e2e; }
+</style>
+</head>
+<body>
+<h1>A2A Test Console</h1>
+<p class="subtitle">Send tasks directly to Sunday or FitBot's <code>/tasks/send</code> endpoint — no LLM involved.</p>
+
+<div class="grid">
+
+  <!-- Sunday panel -->
+  <div class="panel">
+    <div class="panel-title">
+      Sunday
+      <span class="badge badge-sunday">:8080</span>
+      <span class="badge badge-port">/tasks/send</span>
+    </div>
+
+    <details class="agent-card" id="sunday-card">
+      <summary>Agent card /.well-known/agent.json</summary>
+      <pre id="sunday-card-body">loading...</pre>
+    </details>
+
+    <div class="chips" id="sunday-chips">
+      <span class="chip" data-panel="sunday" data-text="is karthik home">is karthik home</span>
+      <span class="chip" data-panel="sunday" data-text="calendar today">calendar today</span>
+      <span class="chip" data-panel="sunday" data-text="calendar tomorrow">calendar tomorrow</span>
+      <span class="chip" data-panel="sunday" data-text="any meetings">any meetings</span>
+    </div>
+
+    <div class="input-row">
+      <textarea id="sunday-input" placeholder="Type a task for Sunday..." class=""></textarea>
+      <button class="send send-purple" id="sunday-send">Send</button>
+    </div>
+
+    <div class="log" id="sunday-log"><p class="empty">No requests yet</p></div>
+  </div>
+
+  <!-- FitBot panel -->
+  <div class="panel">
+    <div class="panel-title">
+      FitBot
+      <span class="badge badge-fitbot">:8000</span>
+      <span class="badge badge-port">/tasks/send</span>
+    </div>
+
+    <details class="agent-card green" id="fitbot-card">
+      <summary>Agent card /.well-known/agent.json</summary>
+      <pre id="fitbot-card-body">loading...</pre>
+    </details>
+
+    <div class="chips">
+      <span class="chip green" data-panel="fitbot" data-text="karthik today summary">karthik today</span>
+      <span class="chip green" data-panel="fitbot" data-text="sravya today summary">sravya today</span>
+      <span class="chip green" data-panel="fitbot" data-text="karthik week summary">karthik week</span>
+      <span class="chip green" data-panel="fitbot" data-text="log 60 min badminton for karthik">log badminton</span>
+      <span class="chip green" data-panel="fitbot" data-text="log 30 min walk for karthik">log walk</span>
+    </div>
+
+    <div class="input-row">
+      <textarea id="fitbot-input" placeholder="Type a task for FitBot..." class="green"></textarea>
+      <button class="send send-green" id="fitbot-send">Send</button>
+    </div>
+
+    <div class="log" id="fitbot-log"><p class="empty">No requests yet</p></div>
+  </div>
+
+</div>
+
+<script>
+const SUNDAY_BASE  = `${location.protocol}//${location.hostname}:8080`;
+const FITBOT_BASE  = `${location.protocol}//${location.hostname}:8000`;
+
+async function sendTask(baseUrl, text, logEl, btnEl) {
+  if (!text.trim()) return;
+  btnEl.disabled = true;
+
+  const id = crypto.randomUUID();
+  const payload = { id, message: { role: 'user', parts: [{ type: 'text', text }] } };
+  const t0 = performance.now();
+
+  // show request
+  appendEntry(logEl, 'req', text, null);
+
+  try {
+    const res = await fetch(`${baseUrl}/tasks/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const ms = Math.round(performance.now() - t0);
+    const data = await res.json();
+    const parts = data?.artifacts?.[0]?.parts ?? [];
+    const reply = parts.find(p => p.type === 'text')?.text ?? JSON.stringify(data);
+    appendEntry(logEl, 'res', reply, ms);
+  } catch (e) {
+    const ms = Math.round(performance.now() - t0);
+    appendEntry(logEl, 'err', String(e), ms);
+  }
+
+  btnEl.disabled = false;
+}
+
+function appendEntry(logEl, type, text, ms) {
+  const empty = logEl.querySelector('.empty');
+  if (empty) empty.remove();
+
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+
+  const header = document.createElement('div');
+  header.className = 'entry-header';
+  const dir = document.createElement('span');
+  dir.className = `dir dir-${type}`;
+  dir.textContent = type === 'req' ? '→ request' : type === 'res' ? '← response' : '✕ error';
+  header.appendChild(dir);
+  if (ms !== null) {
+    const lat = document.createElement('span');
+    lat.className = 'latency';
+    lat.textContent = `${ms}ms`;
+    header.appendChild(lat);
+  }
+
+  const body = document.createElement('div');
+  body.className = 'entry-body';
+  body.textContent = text;
+
+  entry.appendChild(header);
+  entry.appendChild(body);
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// chip clicks
+document.querySelectorAll('.chip[data-panel]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const panel = chip.dataset.panel;
+    document.getElementById(`${panel}-input`).value = chip.dataset.text;
+  });
+});
+
+// send buttons
+document.getElementById('sunday-send').addEventListener('click', () => {
+  const text = document.getElementById('sunday-input').value;
+  sendTask(SUNDAY_BASE, text, document.getElementById('sunday-log'), document.getElementById('sunday-send'));
+});
+document.getElementById('fitbot-send').addEventListener('click', () => {
+  const text = document.getElementById('fitbot-input').value;
+  sendTask(FITBOT_BASE, text, document.getElementById('fitbot-log'), document.getElementById('fitbot-send'));
+});
+
+// enter to send
+['sunday', 'fitbot'].forEach(p => {
+  document.getElementById(`${p}-input`).addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById(`${p}-send`).click();
+    }
+  });
+});
+
+// load agent cards
+async function loadCard(baseUrl, elId, cardElId) {
+  try {
+    const res = await fetch(`${baseUrl}/.well-known/agent.json`);
+    const data = await res.json();
+    document.getElementById(elId).textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    document.getElementById(elId).textContent = `Failed to load: ${e}`;
+  }
+}
+
+loadCard(SUNDAY_BASE, 'sunday-card-body', 'sunday-card');
+loadCard(FITBOT_BASE, 'fitbot-card-body', 'fitbot-card');
+</script>
+</body>
+</html>

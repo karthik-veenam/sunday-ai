@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/python3 /home/djpi/sunday-audio/sunday_audio.py "$@"

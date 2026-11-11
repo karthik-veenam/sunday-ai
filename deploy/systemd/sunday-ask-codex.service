@@ -1,0 +1,24 @@
+[Unit]
+Description=Sunday asynchronous Codex job worker
+After=network-online.target sunday2.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=djpi
+WorkingDirectory=/home/djpi/sunday2-rebuild
+ExecStart=/home/djpi/sunday2-env/bin/python -u codex_worker.py
+Environment=HOME=/home/djpi
+Environment=TZ=Asia/Kolkata
+Environment=PYTHONDONTWRITEBYTECODE=1
+UMask=0077
+Nice=10
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+KillMode=control-group
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=Sunday contextual display projection
+After=network-online.target sunday-stackchan-gateway.service
+[Service]
+Type=simple
+User=djpi
+WorkingDirectory=/home/djpi/sunday-glance-20261107/host
+ExecStart=/home/djpi/sunday2-env/bin/python -u service.py
+Restart=on-failure
+RestartSec=3
+Nice=10
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/home/djpi/sunday /home/djpi/sunday2-rebuild
+PrivateTmp=true
+Environment=PYTHONDONTWRITEBYTECODE=1
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=Sunday Sherpa keyword verifier (trial, loopback 8184)
+After=network.target
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday-sherpa-verifier
+ExecStart=/home/djpi/sunday-verifier-research-20261027/venv/bin/python -u /home/djpi/sunday-sherpa-verifier/server.py
+Restart=on-failure
+RestartSec=2
+Nice=10
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/djpi/sunday-sherpa-verifier/state
+PrivateTmp=true
+[Install]
+WantedBy=multi-user.target

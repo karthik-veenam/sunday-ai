@@ -1,0 +1,11 @@
+[Unit]
+Description=Sunday Nightly Reflection
+After=network.target
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday
+ExecStart=/home/djpi/momo-env/bin/python -u reflect.py
+Environment=DISABLE_TELEMETRY=1
+Environment=DISABLE_ERROR_REPORTING=1
+Environment=DISABLE_BUG_COMMAND=1

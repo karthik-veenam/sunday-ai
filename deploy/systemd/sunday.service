@@ -1,0 +1,21 @@
+[Unit]
+Description=Sunday Voice Assistant
+After=network-online.target sound.target pulseaudio.service
+Wants=pulseaudio.service
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday
+ExecStartPre=/usr/bin/adb start-server
+ExecStart=/home/djpi/momo-env/bin/python -u main.py
+Restart=on-failure
+RestartSec=5
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=PULSE_RUNTIME_PATH=/run/user/1000/pulse/
+Environment=PULSE_SERVER=unix:/run/user/1000/pulse/native
+Environment=DISABLE_TELEMETRY=1
+Environment=DISABLE_ERROR_REPORTING=1
+Environment=DISABLE_BUG_COMMAND=1
+
+[Install]
+WantedBy=multi-user.target

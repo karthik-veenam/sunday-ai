@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Sunday</title>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+    :root{
+      --bg:#0b0b0e;
+      --surface:rgba(255,255,255,.045);
+      --border:rgba(255,255,255,.07);
+      --text:#f0f0f2;
+      --dim:rgba(255,255,255,.38);
+      --vdim:rgba(255,255,255,.16);
+      --purple:#8b5cf6;
+      --blue:#4285f4;
+      --green:#34a853;
+      --yellow:#fbbc04;
+    }
+
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      background:var(--bg);color:var(--text);
+      font-family:-apple-system,'SF Pro Display','Google Sans','Segoe UI',system-ui,sans-serif;
+      user-select:none;-webkit-font-smoothing:antialiased;
+    }
+
+    #app{display:flex;flex-direction:column;height:100vh}
+
+    /* ── HEADER ─────────────────────────────────────────────────────── */
+    #header{
+      padding:22px 28px 14px;
+      display:flex;justify-content:space-between;align-items:flex-start;
+      flex-shrink:0;
+    }
+    #date-label{
+      font-size:.68rem;color:var(--dim);
+      text-transform:uppercase;letter-spacing:.12em;font-weight:500;margin-bottom:5px;
+    }
+    #clock{font-size:3.4rem;font-weight:700;letter-spacing:-2.5px;line-height:1}
+
+    #header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px}
+    #location-line{font-size:.73rem;color:var(--dim);display:flex;align-items:center;gap:6px}
+    #presence-dot{
+      width:6px;height:6px;border-radius:50%;flex-shrink:0;
+      background:rgba(255,255,255,.2);
+      transition:background .5s,box-shadow .5s;
+    }
+    #presence-dot.home{background:var(--green);box-shadow:0 0 6px var(--green)}
+
+    #temp-avatar-row{display:flex;align-items:center;gap:14px}
+    #temp-block{text-align:right}
+    #temp-main{font-size:2.1rem;font-weight:300;letter-spacing:-1px;line-height:1}
+    #humidity-text{font-size:.72rem;color:var(--dim);margin-top:2px}
+
+    /* Avatar */
+    #avatar-wrap{position:relative;width:46px;height:46px;flex-shrink:0}
+    #avatar-ring{
+      position:absolute;inset:-3px;border-radius:50%;
+      background:conic-gradient(from 0deg,#4285f4,#a855f7,#ea4335,#fbbc04,#34a853,#4285f4);
+      opacity:.25;animation:spin 10s linear infinite;
+    }
+    #avatar-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg)}
+    #avatar-img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;z-index:1}
+
+    #avatar-wrap.listening #avatar-ring{opacity:1;animation:spin 1.2s linear infinite}
+    #avatar-wrap.listening{filter:drop-shadow(0 0 14px rgba(66,133,244,.65))}
+    #avatar-wrap.speaking  #avatar-ring{opacity:.9;animation:spin 1.8s linear infinite;
+      background:conic-gradient(from 0deg,#34a853,#4285f4,#a855f7,#34a853)}
+    #avatar-wrap.speaking {filter:drop-shadow(0 0 12px rgba(52,168,83,.55))}
+    #avatar-wrap.thinking  #avatar-ring{opacity:.9;animation:spin .65s linear infinite;
+      background:conic-gradient(from 0deg,#fbbc04,#ea4335,#fbbc04)}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+    /* ── SCROLL AREA ─────────────────────────────────────────────────── */
+    #scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 28px 80px;scroll-behavior:smooth}
+    #scroll::-webkit-scrollbar{display:none}
+
+    /* ── SEARCH BAR ──────────────────────────────────────────────────── */
+    #search{
+      display:flex;align-items:center;gap:12px;
+      padding:0 18px;height:50px;
+      background:var(--surface);border:1px solid var(--border);border-radius:13px;
+      margin-bottom:14px;
+      transition:border-color .35s,box-shadow .35s,background .35s;
+    }
+    #search.listening{
+      border-color:rgba(66,133,244,.75);
+      box-shadow:0 0 0 3px rgba(66,133,244,.1),0 0 28px rgba(66,133,244,.18);
+      background:rgba(66,133,244,.07);
+    }
+    #search.speaking{
+      border-color:rgba(52,168,83,.65);
+      box-shadow:0 0 0 3px rgba(52,168,83,.08);
+      background:rgba(52,168,83,.05);
+    }
+    #search.thinking{
+      border-color:rgba(251,188,4,.5);
+      box-shadow:0 0 0 3px rgba(251,188,4,.07);
+    }
+    #mic-icon{flex-shrink:0;color:var(--dim);transition:color .3s}
+    #search.listening #mic-icon{color:#4285f4}
+    #search.speaking  #mic-icon{color:#34a853}
+    #search-text{
+      flex:1;font-size:.93rem;color:var(--dim);transition:color .3s;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    #search-text.active{color:var(--text)}
+    #response-inline{
+      flex:1;font-size:.93rem;color:var(--text);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none;
+    }
+    #response-inline.show{display:block}
+    #response-inline.streaming::after{content:'▌';color:#4285f4;animation:blink .65s step-end infinite}
+    @keyframes blink{50%{opacity:0}}
+
+    /* ── SUNDAY MESSAGE CARD ─────────────────────────────────────────── */
+    #sunday-card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-left:2px solid rgba(139,92,246,.55);
+      border-radius:13px;padding:14px 18px;margin-bottom:18px;
+      display:none;
+    }
+    #sunday-card.show{display:block}
+    #sunday-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    #sunday-label{
+      font-size:.63rem;font-weight:700;letter-spacing:.16em;
+      color:var(--purple);text-transform:uppercase;
+      display:flex;align-items:center;gap:6px;
+    }
+    #sunday-label::before{
+      content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;
+      background:var(--purple);box-shadow:0 0 7px var(--purple);
+    }
+    #sunday-ts{font-size:.67rem;color:var(--vdim)}
+    #sunday-msg{font-size:.93rem;line-height:1.55;color:rgba(255,255,255,.78)}
+
+    /* ── SECTION LABEL ───────────────────────────────────────────────── */
+    .section-label{
+      font-size:.61rem;font-weight:600;letter-spacing:.15em;
+      color:var(--vdim);text-transform:uppercase;margin-bottom:10px;margin-top:2px;
+    }
+
+    /* ── SUGGESTIONS ─────────────────────────────────────────────────── */
+    #suggestions-section{margin-bottom:18px}
+    #suggest-list:empty::after{
+      content:'Watching the room…';
+      display:block;font-size:.82rem;color:var(--vdim);padding:6px 0;
+    }
+    .suggest-card{
+      display:flex;align-items:center;gap:14px;
+      padding:13px 16px;
+      background:var(--surface);border:1px solid var(--border);border-radius:12px;
+      margin-bottom:8px;cursor:pointer;transition:background .18s;
+    }
+    .suggest-card:active{background:rgba(255,255,255,.09)}
+    .suggest-icon{
+      width:36px;height:36px;border-radius:9px;
+      background:rgba(255,255,255,.07);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;flex-shrink:0;
+    }
+    .suggest-body{flex:1;min-width:0}
+    .suggest-title{font-size:.88rem;font-weight:500;color:var(--text);margin-bottom:3px}
+    .suggest-sub{font-size:.74rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .suggest-arrow{font-size:.95rem;color:var(--vdim);flex-shrink:0;padding-left:4px}
+
+    /* ── ACTIVE / INACTIVE DEVICES ───────────────────────────────────── */
+    #active-section{margin-bottom:8px}
+    .active-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;min-height:36px}
+    .active-pills:empty::after{content:'No active devices';font-size:.8rem;color:var(--vdim);align-self:center}
+    .active-pill{
+      padding:6px 14px;border-radius:20px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+      font-size:.8rem;color:var(--text);
+      display:flex;align-items:center;gap:5px;white-space:nowrap;
+    }
+    .pill-uptime{font-size:.72rem;color:var(--dim)}
+    .inactive-row{display:flex;flex-wrap:wrap;gap:16px}
+    .inactive-item{font-size:.8rem;color:var(--vdim)}
+
+    /* ── FOOTER ──────────────────────────────────────────────────────── */
+    #footer{
+      position:fixed;bottom:0;left:0;right:0;
+      padding:10px 28px 20px;
+      display:flex;justify-content:space-between;align-items:center;
+      background:linear-gradient(to top,var(--bg) 65%,transparent);
+      pointer-events:none;
+    }
+    #reflect-ts{font-size:.67rem;color:var(--vdim)}
+    #scroll-btn{
+      width:34px;height:34px;border-radius:50%;
+      background:rgba(255,255,255,.07);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;pointer-events:all;color:var(--dim);transition:background .2s;
+    }
+    #scroll-btn:active{background:rgba(255,255,255,.14)}
+
+    /* ── OFFLINE OVERLAY ─────────────────────────────────────────────── */
+    #offline{
+      display:none;position:fixed;inset:0;z-index:99;
+      background:rgba(0,0,0,.88);
+      flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    }
+    #offline.show{display:flex}
+    #offline-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:rgba(255,255,255,.25);
+      animation:pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.8}}
+    #offline-text{font-size:.85rem;color:var(--vdim)}
+  </style>
+</head>
+<body>
+<div id="offline">
+  <div id="offline-dot"></div>
+  <div id="offline-text">Connecting to Sunday…</div>
+</div>
+
+<div id="app">
+  <header id="header">
+    <div>
+      <div id="date-label"></div>
+      <div id="clock">—</div>
+    </div>
+    <div id="header-right">
+      <div id="location-line">
+        <div id="presence-dot"></div>
+        <span id="location-text">Roka's Room</span>
+      </div>
+      <div id="temp-avatar-row">
+        <div id="temp-block">
+          <div id="temp-main"><span id="temp-val">—</span>°</div>
+          <div id="humidity-text"><span id="hum-val">—</span>% humidity</div>
+        </div>
+        <div id="avatar-wrap">
+          <div id="avatar-ring"></div>
+          <img id="avatar-img" src="sunday.png" alt="Sunday"/>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="scroll">
+
+    <div id="search">
+      <div id="mic-icon">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <rect x="7.5" y="2" width="5" height="8" rx="2.5" fill="currentColor"/>
+          <path d="M4 10a6 6 0 0012 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <line x1="10" y1="16" x2="10" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="7" y1="19" x2="13" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div id="search-text">Say "Sunday" to start</div>
+      <div id="response-inline"></div>
+    </div>
+
+    <div id="sunday-card">
+      <div id="sunday-card-header">
+        <div id="sunday-label">Sunday</div>
+        <div id="sunday-ts"></div>
+      </div>
+      <div id="sunday-msg"></div>
+    </div>
+
+    <div id="suggestions-section">
+      <div class="section-label">Sunday Suggests</div>
+      <div id="suggest-list"></div>
+    </div>
+
+    <div id="active-section">
+      <div class="section-label">Active</div>
+      <div class="active-pills" id="active-pills"></div>
+      <div class="inactive-row" id="inactive-row"></div>
+    </div>
+
+  </div>
+
+  <div id="footer">
+    <div id="reflect-ts"></div>
+    <div id="scroll-btn" onclick="document.getElementById('scroll').scrollBy({top:180,behavior:'smooth'})">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function tick(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes();
+  const ap=h>=12?'PM':'AM',h12=h%12||12;
+  document.getElementById('clock').textContent=`${h12}:${String(m).padStart(2,'0')} ${ap}`;
+  document.getElementById('date-label').textContent=
+    n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+}
+setInterval(tick,1000);tick();
+
+// ── Refs ──────────────────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const search=$('search'),searchText=$('search-text'),responseInline=$('response-inline');
+const avatarWrap=$('avatar-wrap'),sundayCard=$('sunday-card');
+const sundayMsg=$('sunday-msg'),sundayTs=$('sunday-ts'),ol=$('offline');
+
+let lastResponseText='',lastResponseTime=null,reflectTime=null;
+
+// ── State machine ─────────────────────────────────────────────────────────────
+function setState(s){search.className=s;avatarWrap.className=s}
+
+function setIdle(){
+  setState('');
+  searchText.style.display='';searchText.className='';searchText.textContent='Say "Sunday" to start';
+  responseInline.className='';responseInline.style.display='none';
+}
+function setListening(){
+  setState('listening');
+  searchText.style.display='';searchText.className='active';searchText.textContent='Listening…';
+  responseInline.style.display='none';
+}
+function setTranscript(text){
+  setState('thinking');
+  searchText.style.display='';searchText.className='active';searchText.textContent=text;
+  responseInline.style.display='none';
+}
+function startResponse(){
+  setState('speaking');
+  searchText.style.display='none';
+  responseInline.style.display='';responseInline.className='show streaming';
+  responseInline.textContent='';lastResponseText='';
+}
+function appendChunk(t){responseInline.textContent+=t;lastResponseText+=t}
+function endResponse(){
+  responseInline.classList.remove('streaming');
+  if(lastResponseText.trim()){
+    sundayCard.classList.add('show');
+    sundayMsg.textContent=`"${lastResponseText.trim()}"`;
+    lastResponseTime=Date.now();updateSundayTs();
+  }
+  setTimeout(setIdle,5000);
+}
+
+// ── Relative timestamps ───────────────────────────────────────────────────────
+function relTime(ms){
+  if(!ms) return '';
+  const d=Math.floor((Date.now()-ms)/1000);
+  if(d<15)  return 'just now';
+  if(d<60)  return `${d}s ago`;
+  if(d<3600)return `${Math.floor(d/60)}m ago`;
+  return `${Math.floor(d/3600)}h ago`;
+}
+function updateSundayTs(){if(lastResponseTime) sundayTs.textContent=relTime(lastResponseTime)}
+function updateReflectTs(){$('reflect-ts').textContent=reflectTime?`reflected ${relTime(reflectTime)}`:''}
+setInterval(()=>{updateSundayTs();updateReflectTs()},15000);
+
+// ── Suggestions ───────────────────────────────────────────────────────────────
+function sendCommand(text){
+  if(ws && ws.readyState===WebSocket.OPEN){
+    ws.send(JSON.stringify({type:'command',text}));
+  }
+}
+
+function renderSuggestions(items){
+  const list=$('suggest-list');list.innerHTML='';
+  items.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='suggest-card';
+    d.innerHTML=`
+      <div class="suggest-icon">${item.icon}</div>
+      <div class="suggest-body">
+        <div class="suggest-title">${item.title}</div>
+        <div class="suggest-sub">${item.subtitle}</div>
+      </div>
+      <div class="suggest-arrow">›</div>`;
+    d.addEventListener('click',()=>{
+      const cmd=item.command||item.title;
+      sendCommand(cmd);
+      // Visual feedback
+      d.style.opacity='0.5';
+      setTimeout(()=>d.style.opacity='',300);
+    });
+    list.appendChild(d);
+  });
+}
+
+// ── Devices ───────────────────────────────────────────────────────────────────
+const DEVICE_ORDER=['ac','fan','projector','geyser','tv','moon','top light',
+                    'dashboard','panels','cove','spots','foot lamp'];
+let deviceStates={},deviceUptimes={};
+
+function cap(s){return s.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ')}
+
+function updateDevices(devs,uptimes){
+  if(devs)    Object.assign(deviceStates,devs);
+  if(uptimes) Object.assign(deviceUptimes,uptimes);
+
+  const active=[],inactive=[];
+  DEVICE_ORDER.forEach(d=>{
+    if(deviceStates[d]==='on')  active.push(d);
+    else if(deviceStates[d]==='off') inactive.push(d);
+  });
+
+  const pillsEl=$('active-pills');pillsEl.innerHTML='';
+  active.forEach(d=>{
+    const el=document.createElement('div');el.className='active-pill';
+    const up=deviceUptimes[d];
+    el.innerHTML=`<span>${cap(d)}</span>${up?`<span class="pill-uptime">· ${up}</span>`:''}`;
+    pillsEl.appendChild(el);
+  });
+
+  const inEl=$('inactive-row');inEl.innerHTML='';
+  inactive.forEach(d=>{
+    const s=document.createElement('span');s.className='inactive-item';s.textContent=cap(d);
+    inEl.appendChild(s);
+  });
+}
+
+// ── WebSocket ─────────────────────────────────────────────────────────────────
+let ws;
+function connect(){
+  try{ws=new WebSocket(`ws://${location.hostname||'localhost'}:8080/ws`)}
+  catch(e){ol.classList.add('show');setTimeout(connect,2000);return}
+
+  ws.onopen=()=>{ol.classList.remove('show')};
+  ws.onclose=()=>{ol.classList.add('show');setTimeout(connect,2000)};
+  ws.onerror=()=>ws.close();
+
+  ws.onmessage=(e)=>{
+    const m=JSON.parse(e.data);
+    if     (m.type==='wake')           setListening();
+    else if(m.type==='transcript')     setTranscript(m.text);
+    else if(m.type==='response_start') startResponse();
+    else if(m.type==='response_chunk') appendChunk(m.text);
+    else if(m.type==='response_end')   endResponse();
+    else if(m.type==='idle')           setIdle();
+    else if(m.type==='context'){
+      if(m.temp!=null)     $('temp-val').textContent=m.temp;
+      if(m.humidity!=null) $('hum-val').textContent=m.humidity;
+      if(m.presence!=null){
+        const dot=$('presence-dot'),loc=$('location-text');
+        dot.className=m.presence?'home':'';
+        loc.textContent=`Roka's Room · ${m.presence?'Home':'Away'}`;
+      }
+      if(m.devices) updateDevices(m.devices,m.uptimes||{});
+      if(m.reflect_time){reflectTime=m.reflect_time*1000;updateReflectTs()}
+    }
+    else if(m.type==='suggestions'){
+      renderSuggestions(m.items);
+      reflectTime=Date.now();updateReflectTs();
+    }
+  };
+}
+connect();
+</script>
+</body>
+</html>

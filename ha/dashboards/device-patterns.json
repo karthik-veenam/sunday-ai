@@ -1,0 +1,41 @@
+{
+  "title": "Device Patterns",
+  "views": [
+    {
+      "title": "Live sessions",
+      "path": "live",
+      "type": "panel",
+      "icon": "mdi:record-circle-outline",
+      "cards": [
+        {
+          "type": "custom:sunday-device-pattern-card",
+          "view": "live"
+        }
+      ]
+    },
+    {
+      "title": "History",
+      "path": "history",
+      "type": "panel",
+      "icon": "mdi:calendar-clock",
+      "cards": [
+        {
+          "type": "custom:sunday-device-pattern-card",
+          "view": "history"
+        }
+      ]
+    },
+    {
+      "title": "Patterns",
+      "path": "patterns",
+      "type": "panel",
+      "icon": "mdi:chart-bar",
+      "cards": [
+        {
+          "type": "custom:sunday-device-pattern-card",
+          "view": "patterns"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Sunday Memories",
+  "views": [
+    {
+      "title": "Memory Inbox",
+      "path": "inbox",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-memory-card",
+          "view": "inbox"
+        }
+      ],
+      "icon": "mdi:inbox"
+    },
+    {
+      "title": "Memory Consolidated",
+      "path": "consolidated",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-memory-card",
+          "view": "consolidated"
+        }
+      ],
+      "icon": "mdi:brain"
+    }
+  ]
+}

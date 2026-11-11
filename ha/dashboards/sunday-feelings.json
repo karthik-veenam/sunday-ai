@@ -1,0 +1,28 @@
+{
+  "title": "Sunday Feelings",
+  "views": [
+    {
+      "title": "Feelings",
+      "path": "feelings",
+      "icon": "mdi:emoticon-happy-outline",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-feelings-card",
+          "auto_refresh": true
+        }
+      ]
+    },
+    {
+      "title": "Sleep & sounds",
+      "path": "sleep",
+      "icon": "mdi:sleep",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-sleep-card"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Automations",
+  "views": [
+    {
+      "title": "Device notifications",
+      "path": "notifications",
+      "icon": "mdi:bell-ring-outline",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-notification-card"
+        }
+      ]
+    },
+    {
+      "title": "When I say",
+      "path": "when-i-say",
+      "icon": "mdi:message-flash-outline",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:sunday-phrase-card"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=Optional Telegram diagnostics for rejected Sunday wake candidates
+After=network-online.target
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday-verifier-notifications
+ExecStart=/home/djpi/sunday2-env/bin/python /home/djpi/sunday-verifier-notifications/notify.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

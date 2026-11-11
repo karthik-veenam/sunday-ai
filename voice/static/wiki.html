@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunday Wiki</title>
+  <script src="https://unpkg.com/force-graph@1.43.5/dist/force-graph.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #0d0d0d; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; }
+
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    #header {
+      flex-shrink: 0;
+      height: 48px;
+      padding: 0 20px;
+      border-bottom: 1px solid #1e1e1e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #header h1 { font-size: 15px; font-weight: 600; color: #fff; }
+    #header .sep { color: #333; }
+    #header .sub { font-size: 12px; color: #555; }
+
+    #main {
+      flex: 1;
+      display: flex;
+      min-height: 0; /* critical for flex children to scroll */
+    }
+
+    #graph-wrap {
+      flex: 0 0 42%;
+      position: relative;
+      border-right: 1px solid #1e1e1e;
+      overflow: hidden;
+    }
+    /* force-graph injects a canvas — keep it contained */
+    #graph-wrap canvas { display: block; }
+
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      min-height: 0;
+    }
+
+    #empty {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #2a2a2a;
+      gap: 8px;
+    }
+    #empty .icon { font-size: 32px; }
+    #empty .hint { font-size: 13px; }
+
+    /* Page view */
+    #page-view { display: none; }
+
+    #badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    #page-desc { font-size: 12px; color: #555; margin-bottom: 24px; }
+
+    #md h1 { display: none; }
+    #md h2 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 20px 0 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #md ul { padding-left: 0; list-style: none; }
+    #md li {
+      font-size: 13.5px;
+      color: #bbb;
+      padding: 5px 0 5px 16px;
+      position: relative;
+      border-bottom: 1px solid #111;
+    }
+    #md li::before { content: '›'; position: absolute; left: 0; color: #444; }
+    #md p { font-size: 12px; color: #555; margin-top: 20px; font-style: italic; }
+    #md a {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 0 2px;
+      cursor: pointer;
+      border: 1px solid;
+    }
+    #rule-count { font-size: 11px; color: #333; margin-top: 20px; }
+
+    /* Per-page colours */
+    .c-preferences { color: #bf5af2; }
+    .c-routines    { color: #ff9f0a; }
+    .c-devices     { color: #0a84ff; }
+    .c-schedule    { color: #30d158; }
+
+    .b-preferences { background: rgba(191,90,242,.15);  border-color: rgba(191,90,242,.5);  color: #bf5af2; }
+    .b-routines    { background: rgba(255,159,10,.15);  border-color: rgba(255,159,10,.5);  color: #ff9f0a; }
+    .b-devices     { background: rgba(10,132,255,.15);  border-color: rgba(10,132,255,.5);  color: #0a84ff; }
+    .b-schedule    { background: rgba(48,209,88,.15);   border-color: rgba(48,209,88,.5);   color: #30d158; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <h1>Sunday Wiki</h1>
+    <span class="sep">·</span>
+    <span class="sub" id="hdr-meta">knowledge graph</span>
+  </div>
+  <div id="main">
+    <div id="graph-wrap"></div>
+    <div id="content">
+      <div id="empty">
+        <div class="icon">◎</div>
+        <div class="hint">click a page in the graph</div>
+      </div>
+      <div id="page-view">
+        <div id="badge"></div>
+        <div id="page-desc"></div>
+        <div id="md"></div>
+        <div id="rule-count"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = { preferences:'#bf5af2', routines:'#ff9f0a', devices:'#0a84ff', schedule:'#30d158' };
+const DESC   = {
+  preferences: 'Lighting · Temperature · General habits',
+  routines:    'Scene sequences · Named modes · Triggers',
+  devices:     'Device quirks · Ordering rules',
+  schedule:    'Weekly patterns · Daily rhythms',
+};
+// Fixed positions so nodes spread out nicely (in graph coords, centred on 0,0)
+const FIXED_POS = {
+  routines:    { x:   0, y: -90 },
+  preferences: { x: -90, y:  40 },
+  devices:     { x:  90, y:  40 },
+  schedule:    { x:   0, y:  90 },
+};
+
+let graph = null;
+let nodes = [];
+
+async function init() {
+  const data = await fetch('/api/wiki').then(r => r.json());
+
+  document.getElementById('hdr-meta').textContent = `${data.pages.length} pages`;
+
+  nodes = data.pages.map(p => {
+    const pos = FIXED_POS[p.id] || { x: 0, y: 0 };
+    const bulletCount = (p.content.match(/^- /gm) || []).length;
+    return {
+      id: p.id, content: p.content,
+      color: COLORS[p.id] || '#888',
+      val: Math.max(5, bulletCount * 1.2),
+      fx: pos.x, fy: pos.y,   // fixed positions — no simulation jitter
+      __selected: false,
+    };
+  });
+
+  const links = data.links.map(l => ({ source: l.source, target: l.target }));
+
+  const wrap = document.getElementById('graph-wrap');
+
+  // Measure AFTER layout with a rAF so clientWidth is correct
+  requestAnimationFrame(() => {
+    const W = wrap.offsetWidth;
+    const H = wrap.offsetHeight;
+
+    graph = ForceGraph()(wrap)
+      .width(W)
+      .height(H)
+      .backgroundColor('#0d0d0d')
+      .graphData({ nodes, links })
+      // turn off simulation — fixed positions don't need it
+      .d3AlphaDecay(1)
+      .d3VelocityDecay(1)
+      .nodeLabel('')
+      .nodeCanvasObject((node, ctx, gs) => {
+        const r = Math.sqrt(node.val) * 2.8;
+        const sel = node.__selected;
+        ctx.shadowBlur = sel ? 20 : 8;
+        ctx.shadowColor = node.color;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+        ctx.fillStyle   = sel ? node.color : node.color + '30';
+        ctx.strokeStyle = node.color;
+        ctx.lineWidth   = sel ? 2.5 : 1.5;
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // label
+        const fs = Math.max(11, 14 / gs);
+        ctx.font = `${sel ? '600' : '400'} ${fs}px -apple-system, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = sel ? '#fff' : 'rgba(180,180,180,0.75)';
+        ctx.fillText(node.id, node.x, node.y + r + 4 / gs);
+      })
+      .nodeCanvasObjectMode(() => 'replace')
+      .linkColor(() => '#252525')
+      .linkWidth(1.5)
+      .linkDirectionalArrowLength(5)
+      .linkDirectionalArrowRelPos(1)
+      .linkDirectionalParticles(1)
+      .linkDirectionalParticleSpeed(0.004)
+      .linkDirectionalParticleColor(l => {
+        const id = typeof l.source === 'object' ? l.source.id : l.source;
+        return COLORS[id] || '#555';
+      })
+      .onNodeClick(node => selectNode(node));
+
+    // auto-select first node
+    if (nodes.length > 0) selectNode(nodes[0]);
+
+    window.addEventListener('resize', () => {
+      graph.width(wrap.offsetWidth).height(wrap.offsetHeight);
+    });
+  });
+}
+
+function selectNode(node) {
+  nodes.forEach(n => n.__selected = false);
+  node.__selected = true;
+  showPage(node);
+}
+
+function showPage(node) {
+  document.getElementById('empty').style.display    = 'none';
+  document.getElementById('page-view').style.display = 'block';
+
+  const badge = document.getElementById('badge');
+  badge.textContent = node.id;
+  badge.className   = `b-${node.id}`;
+
+  document.getElementById('page-desc').textContent = DESC[node.id] || '';
+
+  // Pre-process [[links]] before markdown parse
+  let md = node.content.replace(/\[\[([^\]]+)\]\]/g, (_, pg) =>
+    `[${pg}](#${pg.toLowerCase()})`
+  );
+
+  document.getElementById('md').innerHTML = marked.parse(md);
+
+  // Make cross-ref links clickable
+  document.querySelectorAll('#md a[href^="#"]').forEach(a => {
+    const target = a.getAttribute('href').slice(1);
+    a.className = `b-${target}`;
+    a.href = 'javascript:void(0)';
+    a.onclick = e => {
+      e.preventDefault();
+      const n = nodes.find(n => n.id === target);
+      if (n) selectNode(n);
+    };
+  });
+
+  const bullets = (node.content.match(/^- /gm) || []).length;
+  document.getElementById('rule-count').textContent = `${bullets} rule${bullets !== 1 ? 's' : ''}`;
+}
+
+init().catch(console.error);
+</script>
+</body>
+</html>

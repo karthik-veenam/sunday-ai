@@ -1,0 +1,1209 @@
+{
+  "title": "Sunday",
+  "path": "sunday",
+  "cards": [
+    {
+      "type": "custom:mushroom-chips-card",
+      "alignment": "center",
+      "chips": [
+        {
+          "type": "template",
+          "entity": "light.moon",
+          "icon": "mdi:lightbulb-group-outline",
+          "content": "{{ expand('light.moon', 'light.dashboard', 'light.top_light', 'light.panels', 'light.roka_s_room_roka_cove', 'light.roka_s_room_roka_spots', 'light.roka_s_room_roka_light_1', 'light.roka_s_room_roka_light_2', 'light.roka_s_room_roka_foot_lamp') | selectattr('state','eq','on') | list | count }}",
+          "icon_color": "{{ 'amber' if (expand('light.moon', 'light.dashboard', 'light.top_light', 'light.panels', 'light.roka_s_room_roka_cove', 'light.roka_s_room_roka_spots', 'light.roka_s_room_roka_light_1', 'light.roka_s_room_roka_light_2', 'light.roka_s_room_roka_foot_lamp') | selectattr('state','eq','on') | list | count) > 0 else 'grey' }}",
+          "tap_action": {
+            "action": "none"
+          }
+        },
+        {
+          "type": "template",
+          "icon": "mdi:lightbulb-on-outline",
+          "icon_color": "amber",
+          "content": "",
+          "tap_action": {
+            "action": "perform-action",
+            "perform_action": "light.turn_on",
+            "target": {
+              "entity_id": [
+                "light.moon",
+                "light.dashboard",
+                "light.top_light",
+                "light.panels",
+                "light.roka_s_room_roka_cove",
+                "light.roka_s_room_roka_spots",
+                "light.roka_s_room_roka_light_1",
+                "light.roka_s_room_roka_light_2",
+                "light.roka_s_room_roka_foot_lamp"
+              ]
+            }
+          }
+        },
+        {
+          "type": "template",
+          "icon": "mdi:lightbulb-off-outline",
+          "icon_color": "grey",
+          "content": "",
+          "tap_action": {
+            "action": "perform-action",
+            "perform_action": "light.turn_off",
+            "target": {
+              "entity_id": [
+                "light.moon",
+                "light.dashboard",
+                "light.top_light",
+                "light.panels",
+                "light.roka_s_room_roka_cove",
+                "light.roka_s_room_roka_spots",
+                "light.roka_s_room_roka_light_1",
+                "light.roka_s_room_roka_light_2",
+                "light.roka_s_room_roka_foot_lamp"
+              ]
+            }
+          }
+        },
+        {
+          "type": "template",
+          "entity": "sensor.lumi_lumi_sensor_ht_agl02_temperature",
+          "icon": "mdi:thermometer",
+          "content": "{% set t = states('sensor.lumi_lumi_sensor_ht_agl02_temperature') %}{{ (t | float | round(1)) ~ '\u00b0C' if is_number(t) else '\u2014 \u00b0C' }}",
+          "icon_color": "orange",
+          "tap_action": {
+            "action": "more-info"
+          }
+        },
+        {
+          "type": "template",
+          "entity": "sensor.lumi_lumi_sensor_ht_agl02_humidity",
+          "icon": "mdi:water-percent",
+          "content": "{% set h = states('sensor.lumi_lumi_sensor_ht_agl02_humidity') %}{{ (h | float | round(0) | int) ~ '%' if is_number(h) else '\u2014 %' }}",
+          "icon_color": "blue",
+          "tap_action": {
+            "action": "more-info"
+          }
+        },
+        {
+          "type": "template",
+          "entity": "climate.bedroom_ac",
+          "icon": "mdi:snowflake",
+          "content": "{% set s = states('climate.bedroom_ac') %}{% set t = state_attr('climate.bedroom_ac','temperature') %}{{ ((t | float | round(1) | string).removesuffix('.0')) ~ '\u00b0' if s not in ['off','unknown','unavailable'] and is_number(t) else '' }}",
+          "icon_color": "{{ 'blue' if states('climate.bedroom_ac') not in ['off','unknown','unavailable'] else 'grey' }}",
+          "tap_action": {
+            "action": "more-info"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": " :host {\n --chip-height: 34px;\n --chip-spacing: 8px;\n --chip-font-size: 12px;\n --chip-font-weight: 600;\n --chip-background: var(--secondary-background-color);\n --chip-border-color: var(--divider-color);\n --chip-box-shadow: none;\n}\nha-card {\n padding: 10px 8px;\n border: 1px solid var(--divider-color);\n border-radius: 14px;\n background: var(--ha-card-background, var(--card-background-color));\n box-shadow: none;\n}\n.chip-container { gap: 8px; }\n\n\n\n:host { --chip-height: 34px; --chip-spacing: 4px; --chip-font-size: 11px; --chip-icon-size: 16px; }\n.chip-container { gap: 4px; }\nmushroom-template-chip:nth-child(1) { --chip-border-radius: 18px 0 0 18px; margin-inline-end: -4px; }\nmushroom-template-chip:nth-child(2) { --chip-border-radius: 0; margin-inline-end: -4px; }\nmushroom-template-chip:nth-child(3) { --chip-border-radius: 0 18px 18px 0; }\n\n\n/* One-row status strip: labels are carried by icons, values stay compact. */\n:host {\n --chip-height: 32px;\n --chip-spacing: 4px;\n --chip-font-size: 11px;\n --chip-icon-size: 16px;\n --chip-padding: 0 0.2em;\n}\nha-card { padding: 8px 4px; }\n.chip-container {\n display: flex !important;\n flex-wrap: nowrap !important;\n align-items: center;\n justify-content: center;\n gap: 4px !important;\n}\n.chip-container > * { min-width: 0; flex: 0 1 auto; }\nmushroom-template-chip:nth-child(1) { --chip-border-radius: 16px 0 0 16px; margin-inline-end: -4px; }\nmushroom-template-chip:nth-child(2) { --chip-border-radius: 0; margin-inline-end: -4px; }\nmushroom-template-chip:nth-child(3) { --chip-border-radius: 0 16px 16px 0; }\n"
+      }
+    },
+    {
+      "type": "custom:mushroom-template-card",
+      "entity": "input_boolean.sunday_no_listening",
+      "primary": "Sunday \u00b7 No listening",
+      "secondary": "{{ 'Paused \u2014 wake word and voice input disabled' if is_state('input_boolean.sunday_no_listening','on') else 'Listening for Sunday' }}",
+      "icon": "{{ 'mdi:microphone-off' if is_state('input_boolean.sunday_no_listening','on') else 'mdi:microphone' }}",
+      "icon_color": "{{ 'red' if is_state('input_boolean.sunday_no_listening','on') else 'green' }}",
+      "tap_action": {
+        "action": "toggle"
+      },
+      "hold_action": {
+        "action": "more-info"
+      },
+      "multiline_secondary": true
+    },
+    {
+      "type": "conditional",
+      "_firetv_block": true,
+      "conditions": [
+        {
+          "entity": "switch.16amp_smart_plug_2_socket_1",
+          "state": "on"
+        }
+      ],
+      "card": {
+        "type": "vertical-stack",
+        "cards": [
+          {
+            "type": "heading",
+            "heading": "Fire TV",
+            "heading_style": "title",
+            "card_mod": {
+              "style": "\n :host {\n --ha-heading-card-title-font-weight: 700;\n --ha-heading-card-title-font-size: 18px;\n}\n.title, .heading, h1, h2, p { font-weight: 700 !important; }\n"
+            }
+          },
+          {
+            "type": "custom:mod-card",
+            "card_mod": {
+              "style": "ha-card {\n  background: {{ ('url(' ~ state_attr('media_player.karthik_s_fire_tv','entity_picture') ~ ') center / cover no-repeat') if (is_state('media_player.karthik_s_fire_tv','on') and state_attr('media_player.karthik_s_fire_tv','entity_picture')) else ('linear-gradient(135deg, #56CCF2, #2F80ED)' if not is_state('media_player.karthik_s_fire_tv','off') else 'var(--ha-card-background)') }} !important;\n}\n\n:host { --primary-text-color: #ffffff; --secondary-text-color: #edf6ff; --rgb-primary-text-color: 255, 255, 255; --rgb-secondary-text-color: 237, 246, 255; }\nha-card { overflow: hidden; border-radius: 12px; border: 1px solid var(--ha-card-border-color); }\nha-card { position: relative; }\nha-card { position: relative; }"
+            },
+            "card": {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "custom:mushroom-media-player-card",
+                  "entity": "media_player.karthik_s_fire_tv",
+                  "use_media_info": false,
+                  "media_controls": [
+                    "play_pause_stop"
+                  ],
+                  "volume_controls": [
+                    "volume_buttons"
+                  ],
+                  "collapsible_controls": false,
+                  "card_mod": {
+                    "style": "ha-card { background: transparent !important; border: none; box-shadow: none; } :host { --primary-text-color: #fff; --secondary-text-color: #edf6ff; --rgb-primary-text-color: 255,255,255; --rgb-secondary-text-color: 237,246,255; }\nmushroom-state-item { padding-right: 90px; }\nmushroom-state-item { padding-right: 90px; }"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-chips-card",
+                  "alignment": "end",
+                  "chips": [
+                    {
+                      "type": "action",
+                      "icon": "mdi:power",
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "switch.toggle",
+                        "target": {
+                          "entity_id": "switch.16amp_smart_plug_2_socket_1"
+                        }
+                      }
+                    },
+                    {
+                      "type": "action",
+                      "icon": "mdi:remote-tv",
+                      "tap_action": {
+                        "action": "fire-dom-event",
+                        "browser_mod": {
+                          "service": "browser_mod.popup",
+                          "data": {
+                            "title": "TV Remote",
+                            "content": {
+                              "type": "custom:mod-card",
+                              "card_mod": {
+                                "style": "ha-card {padding:12px;max-width:360px;margin:0 auto;background:#f5f8fc;border:1px solid #dce5ef;border-radius:22px;box-sizing:border-box;}"
+                              },
+                              "card": {
+                                "type": "vertical-stack",
+                                "cards": [
+                                  {
+                                    "type": "custom:fire-tv-remote-header",
+                                    "title": "Fire TV",
+                                    "subtitle": "RoKa Room",
+                                    "remote": "remote.karthik_s_fire_tv",
+                                    "adb_entity": "media_player.fire_tv_192_168_88_35",
+                                    "power_action": {
+                                      "action": "perform-action",
+                                      "perform_action": "switch.toggle",
+                                      "target": {
+                                        "entity_id": "switch.16amp_smart_plug_2_socket_1"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "custom:sony-sector-dpad-universal",
+                                    "actions": {
+                                      "DPAD_UP": {
+                                        "action": "perform-action",
+                                        "perform_action": "remote.send_command",
+                                        "target": {
+                                          "entity_id": "remote.karthik_s_fire_tv"
+                                        },
+                                        "data": {
+                                          "command": "up"
+                                        }
+                                      },
+                                      "DPAD_LEFT": {
+                                        "action": "perform-action",
+                                        "perform_action": "remote.send_command",
+                                        "target": {
+                                          "entity_id": "remote.karthik_s_fire_tv"
+                                        },
+                                        "data": {
+                                          "command": "left"
+                                        }
+                                      },
+                                      "DPAD_CENTER": {
+                                        "action": "perform-action",
+                                        "perform_action": "remote.send_command",
+                                        "target": {
+                                          "entity_id": "remote.karthik_s_fire_tv"
+                                        },
+                                        "data": {
+                                          "command": "select"
+                                        }
+                                      },
+                                      "DPAD_RIGHT": {
+                                        "action": "perform-action",
+                                        "perform_action": "remote.send_command",
+                                        "target": {
+                                          "entity_id": "remote.karthik_s_fire_tv"
+                                        },
+                                        "data": {
+                                          "command": "right"
+                                        }
+                                      },
+                                      "DPAD_DOWN": {
+                                        "action": "perform-action",
+                                        "perform_action": "remote.send_command",
+                                        "target": {
+                                          "entity_id": "remote.karthik_s_fire_tv"
+                                        },
+                                        "data": {
+                                          "command": "down"
+                                        }
+                                      }
+                                    },
+                                    "firetv_hold": true
+                                  },
+                                  {
+                                    "type": "grid",
+                                    "columns": 3,
+                                    "square": false,
+                                    "cards": [
+                                      {
+                                        "type": "button",
+                                        "name": "",
+                                        "icon": "mdi:rewind",
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "rewind"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      },
+                                      {
+                                        "type": "button",
+                                        "name": "",
+                                        "icon": "mdi:play-pause",
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "play_pause"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      },
+                                      {
+                                        "type": "button",
+                                        "name": "",
+                                        "icon": "mdi:fast-forward",
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "fast_forward"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "custom:mod-card",
+                                    "card": {
+                                      "type": "grid",
+                                      "columns": 3,
+                                      "square": false,
+                                      "cards": [
+                                        {
+                                          "type": "button",
+                                          "name": "",
+                                          "icon": "mdi:volume-minus",
+                                          "show_state": false,
+                                          "show_name": false,
+                                          "tap_action": {
+                                            "action": "perform-action",
+                                            "perform_action": "media_player.volume_down",
+                                            "target": {
+                                              "entity_id": "media_player.soundbar_2"
+                                            }
+                                          },
+                                          "hold_action": {
+                                            "action": "none"
+                                          },
+                                          "card_mod": {
+                                            "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                          }
+                                        },
+                                        {
+                                          "type": "button",
+                                          "name": "Mute",
+                                          "icon": "mdi:volume-off",
+                                          "show_state": false,
+                                          "show_name": false,
+                                          "tap_action": {
+                                            "action": "perform-action",
+                                            "perform_action": "remote.send_command",
+                                            "target": {
+                                              "entity_id": "remote.karthik_s_fire_tv"
+                                            },
+                                            "data": {
+                                              "command": "mute"
+                                            }
+                                          },
+                                          "hold_action": {
+                                            "action": "none"
+                                          },
+                                          "card_mod": {
+                                            "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                          }
+                                        },
+                                        {
+                                          "type": "button",
+                                          "name": "",
+                                          "icon": "mdi:volume-plus",
+                                          "show_state": false,
+                                          "show_name": false,
+                                          "tap_action": {
+                                            "action": "perform-action",
+                                            "perform_action": "media_player.volume_up",
+                                            "target": {
+                                              "entity_id": "media_player.soundbar_2"
+                                            }
+                                          },
+                                          "hold_action": {
+                                            "action": "none"
+                                          },
+                                          "card_mod": {
+                                            "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "card_mod": {
+                                      "style": "ha-card { background: #e7eef6; border: 1px solid #dae4ef; border-radius: 18px; padding: 2px; box-shadow: none; }\nha-card { margin: 14px 0 !important; padding: 6px 2px; }"
+                                    }
+                                  },
+                                  {
+                                    "type": "grid",
+                                    "columns": 3,
+                                    "square": false,
+                                    "cards": [
+                                      {
+                                        "type": "button",
+                                        "name": "Back",
+                                        "icon": "mdi:arrow-u-left-top",
+                                        "show_state": false,
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "back"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      },
+                                      {
+                                        "type": "button",
+                                        "name": "Home",
+                                        "icon": "mdi:home",
+                                        "show_state": false,
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "home"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      },
+                                      {
+                                        "type": "button",
+                                        "name": "Menu",
+                                        "icon": "mdi:menu",
+                                        "show_state": false,
+                                        "show_name": false,
+                                        "tap_action": {
+                                          "action": "perform-action",
+                                          "perform_action": "remote.send_command",
+                                          "target": {
+                                            "entity_id": "remote.karthik_s_fire_tv"
+                                          },
+                                          "data": {
+                                            "command": "menu"
+                                          }
+                                        },
+                                        "hold_action": {
+                                          "action": "none"
+                                        },
+                                        "card_mod": {
+                                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "card_mod": {
+                                  "style": "#root {gap:8px !important;}"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "card_mod": {
+                    "style": ":host { position: absolute; right: 10px; top: 10px; width: auto; z-index: 20; }\nha-card { padding: 0; border: none; box-shadow: none; background: transparent; }"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "grid",
+      "columns": 2,
+      "square": false,
+      "cards": [
+        {
+          "type": "thermostat",
+          "entity": "climate.bedroom_auto_target",
+          "name": "Auto Climate",
+          "show_current_as_primary": false,
+          "features": [
+            {
+              "type": "target-temperature",
+              "style": "buttons"
+            }
+          ],
+          "card_mod": {
+            "style": "{% set enabled = is_state('input_boolean.bedroom_auto_climate', 'on') %}\n{% set active = enabled and is_state('automation.bedroom_auto_climate', 'on') and (now().hour >= 21 or now().hour < 12) and states('sensor.lumi_lumi_sensor_ht_agl02_temperature') not in ['unknown', 'unavailable'] %}\nha-card {\n  background: {{ 'linear-gradient(145deg, #eefbf7 0%, #cdeee5 100%)' if active else 'var(--ha-card-background, var(--card-background-color))' }};\n  border: 1px solid {{ '#9ed7c7' if active else 'var(--divider-color)' }};\n  box-shadow: {{ '0 3px 14px rgba(38, 145, 115, 0.10)' if active else 'none' }};\n  {% if active %}\n  --state-climate-cool-color: #258b75;\n  --tile-color: #258b75;\n  {% endif %}\n  transition: background 300ms ease, box-shadow 300ms ease;\n}\n\n{% set active = is_state('input_boolean.bedroom_auto_climate', 'on') and is_state('automation.bedroom_auto_climate', 'on') and (now().hour >= 21 or now().hour < 12) and states('sensor.lumi_lumi_sensor_ht_agl02_temperature') not in ['unknown', 'unavailable'] %}\n{% if active %}\n:host {\n  --primary-text-color: #153e37;\n  --secondary-text-color: #3b655d;\n  --ha-card-header-color: #153e37;\n  --rgb-primary-text-color: 21, 62, 55;\n  --rgb-secondary-text-color: 59, 101, 93;\n  --disabled-text-color: #627f78;\n  --state-climate-cool-color: #258b75;\n  --state-input_boolean-on-color: #258b75;\n  --control-number-buttons-background-color: #b2ded2;\n  --control-number-buttons-color: #153e37;\n  --control-number-buttons-focus-color: #258b75;\n}\nha-card {\n  color: #153e37;\n  --primary-text-color: #153e37;\n  --secondary-text-color: #3b655d;\n  --ha-card-header-color: #153e37;\n  --rgb-primary-text-color: 21, 62, 55;\n  --rgb-secondary-text-color: 59, 101, 93;\n  --disabled-text-color: #627f78;\n  --control-number-buttons-background-color: #b2ded2;\n  --control-number-buttons-color: #153e37;\n}\n{% endif %}\n\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "tile",
+          "entity": "climate.bedroom_ac",
+          "name": "AC",
+          "icon": "mdi:air-conditioner",
+          "hide_state": true,
+          "vertical": true,
+          "tap_action": {
+            "action": "more-info"
+          },
+          "color": "light-blue",
+          "card_mod": {
+            "style": "{% set on = states('climate.bedroom_ac') not in ['off', 'unknown', 'unavailable'] %}\nha-card {\n  background: {{ 'linear-gradient(145deg, #e0f5ff 0%, #99dcfa 100%)' if on else 'var(--ha-card-background, var(--card-background-color))' }};\n  border: 1px solid {{ '#83cff0' if on else 'var(--divider-color)' }};\n  box-shadow: {{ '0 4px 16px rgba(56, 165, 215, 0.15)' if on else 'none' }};\n  {% if on %}\n  --primary-text-color: #144763;\n  --secondary-text-color: #245d79;\n  --tile-color: #168ac3;\n  --card-mod-icon: mdi:snowflake;\n  {% endif %}\n  transition: background 250ms ease, box-shadow 250ms ease;\n}\n{% if on %}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  inset: 0;\n  border-radius: inherit;\n  pointer-events: none;\n  background-image: radial-gradient(circle at 16% 24%, #ffffffb3 0 2px, transparent 3px), radial-gradient(circle at 83% 20%, #ffffffb3 0 3px, transparent 4px), radial-gradient(circle at 75% 75%, #ffffff99 0 2px, transparent 3px), radial-gradient(circle at 24% 82%, #ffffff88 0 3px, transparent 4px);\n}\n{% endif %}\n\nha-card { height: 100%; box-sizing: border-box; }\n\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "tile",
+          "entity": "fan.roka_s_room_roka_fan",
+          "name": "Fan",
+          "icon": "mdi:fan",
+          "hide_state": true,
+          "vertical": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { height: 100%; box-sizing: border-box; }\n\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "tile",
+          "entity": "input_boolean.bedroom_auto_climate",
+          "name": "Auto",
+          "icon": "mdi:thermostat-auto",
+          "hide_state": true,
+          "vertical": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "icon_tap_action": {
+            "action": "toggle"
+          },
+          "hold_action": {
+            "action": "none"
+          },
+          "double_tap_action": {
+            "action": "none"
+          },
+          "card_mod": {
+            "style": "{% set enabled = is_state('input_boolean.bedroom_auto_climate', 'on') %}\n{% set active = is_state('input_boolean.bedroom_auto_climate', 'on') %}\nha-card {\n  background: {{ 'linear-gradient(145deg, #eefbf7 0%, #cdeee5 100%)' if active else 'var(--ha-card-background, var(--card-background-color))' }};\n  border: 1px solid {{ '#9ed7c7' if active else 'var(--divider-color)' }};\n  box-shadow: {{ '0 3px 14px rgba(38, 145, 115, 0.10)' if active else 'none' }};\n  {% if active %}\n  --state-climate-cool-color: #258b75;\n  --tile-color: #258b75;\n  {% endif %}\n  transition: background 300ms ease, box-shadow 300ms ease;\n}\n\n{% set active = is_state('input_boolean.bedroom_auto_climate', 'on') %}\n{% if active %}\n:host {\n  --primary-text-color: #153e37;\n  --secondary-text-color: #3b655d;\n  --ha-card-header-color: #153e37;\n  --rgb-primary-text-color: 21, 62, 55;\n  --rgb-secondary-text-color: 59, 101, 93;\n  --disabled-text-color: #627f78;\n  --state-climate-cool-color: #258b75;\n  --state-input_boolean-on-color: #258b75;\n  --control-number-buttons-background-color: #b2ded2;\n  --control-number-buttons-color: #153e37;\n  --control-number-buttons-focus-color: #258b75;\n}\nha-card {\n  color: #153e37;\n  --primary-text-color: #153e37;\n  --secondary-text-color: #3b655d;\n  --ha-card-header-color: #153e37;\n  --rgb-primary-text-color: 21, 62, 55;\n  --rgb-secondary-text-color: 59, 101, 93;\n  --disabled-text-color: #627f78;\n  --control-number-buttons-background-color: #b2ded2;\n  --control-number-buttons-color: #153e37;\n}\n{% endif %}\n\nha-card { height: 100%; box-sizing: border-box; }\n\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": "#root { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; grid-template-rows: repeat(3,minmax(0,1fr)) !important; gap: 8px; align-items: stretch; }\n#root > :nth-child(1) { grid-column: 1 !important; grid-row: 1 / span 3 !important; }\n#root > :nth-child(2) { grid-column: 2 !important; grid-row: 1 !important; }\n#root > :nth-child(3) { grid-column: 2 !important; grid-row: 2 !important; }\n#root > :nth-child(4) { grid-column: 2 !important; grid-row: 3 !important; }\n#root > * { min-height: 0; }\n\n:host { --grid-card-gap: 8px; }"
+      }
+    },
+    {
+      "type": "entities",
+      "show_header_toggle": false,
+      "entities": [
+        {
+          "entity": "input_select.bedroom_auto_climate_mode",
+          "name": "Auto Climate mode"
+        }
+      ],
+      "card_mod": {
+        "style": "ha-card { border-radius: 14px; }"
+      }
+    },
+    {
+      "type": "heading",
+      "heading": "Devices",
+      "heading_style": "title",
+      "card_mod": {
+        "style": "\n :host {\n --ha-heading-card-title-font-weight: 700;\n --ha-heading-card-title-font-size: 18px;\n}\n.title, .heading, h1, h2, p { font-weight: 700 !important; }\n"
+      }
+    },
+    {
+      "type": "grid",
+      "columns": 2,
+      "square": false,
+      "cards": [
+        {
+          "type": "custom:mushroom-entity-card",
+          "entity": "switch.geyser_socket_1",
+          "name": "Geyser",
+          "icon": "mdi:water-boiler",
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-entity-card",
+          "entity": "switch.16amp_smart_plug_2_socket_1",
+          "name": "Projector",
+          "icon": "mdi:projector",
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": "\n:host { --grid-card-gap: 8px; }"
+      }
+    },
+    {
+      "type": "heading",
+      "heading": "Ambient Lights",
+      "heading_style": "title",
+      "card_mod": {
+        "style": "\n :host {\n --ha-heading-card-title-font-weight: 700;\n --ha-heading-card-title-font-size: 18px;\n}\n.title, .heading, h1, h2, p { font-weight: 700 !important; }\n"
+      }
+    },
+    {
+      "type": "grid",
+      "columns": 2,
+      "square": false,
+      "cards": [
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.moon",
+          "name": "Moon",
+          "icon": "mdi:moon-waning-crescent",
+          "layout": "horizontal",
+          "use_light_color": true,
+          "show_brightness_control": true,
+          "show_color_temp_control": false,
+          "show_color_control": false,
+          "collapsible_controls": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "hold_action": {
+            "action": "more-info"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.dashboard",
+          "name": "Dashboard",
+          "icon": "mdi:television-ambient-light",
+          "layout": "horizontal",
+          "use_light_color": true,
+          "show_brightness_control": true,
+          "show_color_temp_control": false,
+          "show_color_control": false,
+          "collapsible_controls": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "hold_action": {
+            "action": "more-info"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.top_light",
+          "name": "Top Light",
+          "icon": "mdi:ceiling-light",
+          "layout": "horizontal",
+          "use_light_color": true,
+          "show_brightness_control": true,
+          "show_color_temp_control": false,
+          "show_color_control": false,
+          "collapsible_controls": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "hold_action": {
+            "action": "more-info"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.panels",
+          "name": "Panels",
+          "icon": "mdi:view-grid-outline",
+          "layout": "horizontal",
+          "use_light_color": true,
+          "show_brightness_control": true,
+          "show_color_temp_control": false,
+          "show_color_control": false,
+          "collapsible_controls": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "hold_action": {
+            "action": "more-info"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": "\n:host { --grid-card-gap: 8px; }"
+      }
+    },
+    {
+      "type": "heading",
+      "heading": "Room Lights",
+      "heading_style": "title",
+      "card_mod": {
+        "style": "\n :host {\n --ha-heading-card-title-font-weight: 700;\n --ha-heading-card-title-font-size: 18px;\n}\n.title, .heading, h1, h2, p { font-weight: 700 !important; }\n"
+      }
+    },
+    {
+      "type": "grid",
+      "columns": 3,
+      "square": false,
+      "cards": [
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.roka_s_room_roka_spots",
+          "name": "Spots",
+          "icon": "mdi:spotlight-beam",
+          "layout": "vertical",
+          "fill_container": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.roka_s_room_roka_cove",
+          "name": "Cove",
+          "icon": "mdi:led-strip-variant",
+          "layout": "vertical",
+          "fill_container": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.roka_s_room_roka_foot_lamp",
+          "name": "Foot",
+          "icon": "mdi:floor-lamp",
+          "layout": "vertical",
+          "fill_container": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.roka_s_room_roka_light_1",
+          "name": "Light 1",
+          "icon": "mdi:ceiling-light",
+          "layout": "vertical",
+          "fill_container": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-light-card",
+          "entity": "light.roka_s_room_roka_light_2",
+          "name": "Light 2",
+          "icon": "mdi:ceiling-light",
+          "layout": "vertical",
+          "fill_container": true,
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": "\n:host { --grid-card-gap: 8px; }"
+      }
+    },
+    {
+      "type": "heading",
+      "heading": "Automations",
+      "heading_style": "title",
+      "card_mod": {
+        "style": "\n :host {\n --ha-heading-card-title-font-weight: 700;\n --ha-heading-card-title-font-size: 18px;\n}\n.title, .heading, h1, h2, p { font-weight: 700 !important; }\n"
+      }
+    },
+    {
+      "type": "grid",
+      "columns": 2,
+      "square": false,
+      "cards": [
+        {
+          "type": "custom:mushroom-entity-card",
+          "entity": "input_boolean.moon_auto_lighting",
+          "name": "Auto Lighting",
+          "icon": "mdi:theme-light-dark",
+          "tap_action": {
+            "action": "toggle"
+          },
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        },
+        {
+          "type": "custom:mushroom-select-card",
+          "entity": "input_select.moon_lighting_mode",
+          "name": "Lighting Mode",
+          "icon": "mdi:weather-sunset",
+          "card_mod": {
+            "style": "\nha-card { border-radius: 14px; box-sizing: border-box; }\n"
+          }
+        }
+      ],
+      "card_mod": {
+        "style": "\n:host { --grid-card-gap: 8px; }"
+      }
+    },
+    {
+      "type": "custom:tv-quick-remote",
+      "entity": "media_player.karthik_s_fire_tv",
+      "playback_entities": [
+        "media_player.karthik_s_fire_tv"
+      ],
+      "name": "RoKa TV",
+      "routes": [
+        "/dashboard-roka/1",
+        "/dashboard-roka/sunday"
+      ],
+      "volume_down": {
+        "action": "perform-action",
+        "perform_action": "media_player.volume_down",
+        "target": {
+          "entity_id": "media_player.soundbar_2"
+        }
+      },
+      "volume_up": {
+        "action": "perform-action",
+        "perform_action": "media_player.volume_up",
+        "target": {
+          "entity_id": "media_player.soundbar_2"
+        }
+      },
+      "remote_action": {
+        "service": "browser_mod.popup",
+        "data": {
+          "title": "TV Remote",
+          "content": {
+            "type": "custom:mod-card",
+            "card_mod": {
+              "style": "ha-card {padding:12px;max-width:360px;margin:0 auto;background:#f5f8fc;border:1px solid #dce5ef;border-radius:22px;box-sizing:border-box;}"
+            },
+            "card": {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "custom:fire-tv-remote-header",
+                  "title": "Fire TV",
+                  "subtitle": "RoKa Room",
+                  "remote": "remote.karthik_s_fire_tv",
+                  "adb_entity": "media_player.fire_tv_192_168_88_35",
+                  "power_action": {
+                    "action": "perform-action",
+                    "perform_action": "switch.toggle",
+                    "target": {
+                      "entity_id": "switch.16amp_smart_plug_2_socket_1"
+                    }
+                  }
+                },
+                {
+                  "type": "custom:sony-sector-dpad-universal",
+                  "actions": {
+                    "DPAD_UP": {
+                      "action": "perform-action",
+                      "perform_action": "remote.send_command",
+                      "target": {
+                        "entity_id": "remote.karthik_s_fire_tv"
+                      },
+                      "data": {
+                        "command": "up"
+                      }
+                    },
+                    "DPAD_LEFT": {
+                      "action": "perform-action",
+                      "perform_action": "remote.send_command",
+                      "target": {
+                        "entity_id": "remote.karthik_s_fire_tv"
+                      },
+                      "data": {
+                        "command": "left"
+                      }
+                    },
+                    "DPAD_CENTER": {
+                      "action": "perform-action",
+                      "perform_action": "remote.send_command",
+                      "target": {
+                        "entity_id": "remote.karthik_s_fire_tv"
+                      },
+                      "data": {
+                        "command": "select"
+                      }
+                    },
+                    "DPAD_RIGHT": {
+                      "action": "perform-action",
+                      "perform_action": "remote.send_command",
+                      "target": {
+                        "entity_id": "remote.karthik_s_fire_tv"
+                      },
+                      "data": {
+                        "command": "right"
+                      }
+                    },
+                    "DPAD_DOWN": {
+                      "action": "perform-action",
+                      "perform_action": "remote.send_command",
+                      "target": {
+                        "entity_id": "remote.karthik_s_fire_tv"
+                      },
+                      "data": {
+                        "command": "down"
+                      }
+                    }
+                  },
+                  "firetv_hold": true
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "",
+                      "icon": "mdi:rewind",
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "rewind"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "",
+                      "icon": "mdi:play-pause",
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "play_pause"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "",
+                      "icon": "mdi:fast-forward",
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "fast_forward"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "custom:mod-card",
+                  "card": {
+                    "type": "grid",
+                    "columns": 3,
+                    "square": false,
+                    "cards": [
+                      {
+                        "type": "button",
+                        "name": "",
+                        "icon": "mdi:volume-minus",
+                        "show_state": false,
+                        "show_name": false,
+                        "tap_action": {
+                          "action": "perform-action",
+                          "perform_action": "media_player.volume_down",
+                          "target": {
+                            "entity_id": "media_player.soundbar_2"
+                          }
+                        },
+                        "hold_action": {
+                          "action": "none"
+                        },
+                        "card_mod": {
+                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "name": "Mute",
+                        "icon": "mdi:volume-off",
+                        "show_state": false,
+                        "show_name": false,
+                        "tap_action": {
+                          "action": "perform-action",
+                          "perform_action": "remote.send_command",
+                          "target": {
+                            "entity_id": "remote.karthik_s_fire_tv"
+                          },
+                          "data": {
+                            "command": "mute"
+                          }
+                        },
+                        "hold_action": {
+                          "action": "none"
+                        },
+                        "card_mod": {
+                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "name": "",
+                        "icon": "mdi:volume-plus",
+                        "show_state": false,
+                        "show_name": false,
+                        "tap_action": {
+                          "action": "perform-action",
+                          "perform_action": "media_player.volume_up",
+                          "target": {
+                            "entity_id": "media_player.soundbar_2"
+                          }
+                        },
+                        "hold_action": {
+                          "action": "none"
+                        },
+                        "card_mod": {
+                          "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                        }
+                      }
+                    ]
+                  },
+                  "card_mod": {
+                    "style": "ha-card { background: #e7eef6; border: 1px solid #dae4ef; border-radius: 18px; padding: 2px; box-shadow: none; }\nha-card { margin: 14px 0 !important; padding: 6px 2px; }"
+                  }
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Back",
+                      "icon": "mdi:arrow-u-left-top",
+                      "show_state": false,
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "back"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Home",
+                      "icon": "mdi:home",
+                      "show_state": false,
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "home"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Menu",
+                      "icon": "mdi:menu",
+                      "show_state": false,
+                      "show_name": false,
+                      "tap_action": {
+                        "action": "perform-action",
+                        "perform_action": "remote.send_command",
+                        "target": {
+                          "entity_id": "remote.karthik_s_fire_tv"
+                        },
+                        "data": {
+                          "command": "menu"
+                        }
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      },
+                      "card_mod": {
+                        "style": "ha-card {height:60px !important;min-height:60px !important;width:100% !important;box-sizing:border-box;margin:0 !important;border:0;border-radius:18px;background:#e7eef6;box-shadow:none;--primary-text-color:#294765;--state-icon-color:#294765;} ha-state-icon,ha-icon {--mdc-icon-size:26px;}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "card_mod": {
+                "style": "#root {gap:8px !important;}"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

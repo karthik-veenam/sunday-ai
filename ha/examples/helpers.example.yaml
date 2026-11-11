@@ -1,0 +1,33 @@
+# Do not create YAML helpers with IDs already owned by storage helpers.
+input_boolean:
+  bedroom_auto_climate:
+    name: Bedroom Auto Climate
+    icon: mdi:air-conditioner
+  bedroom_climate_session:
+    name: Bedroom Climate Session
+  sunday_no_listening:
+    name: Sunday No Listening
+  sunday_transcripts_to_telegram:
+    name: Sunday transcripts to Telegram
+  sunday_rejected_wakes_to_telegram:
+    name: Sunday rejected wakes to Telegram
+input_number:
+  bedroom_target_temperature:
+    name: Bedroom target temperature
+    min: 18
+    max: 30
+    step: 0.5
+    unit_of_measurement: °C
+    mode: box
+input_select:
+  bedroom_auto_climate_mode:
+    name: Bedroom Auto Climate Mode
+    options:
+    - Maintain temperature
+    - Cool to target, then stop
+  sunday_wake_model:
+    name: Sunday Wake Model
+    options:
+    - Current — November 7
+    - Previous — V5/V6 + verifier
+    icon: mdi:microphone-message

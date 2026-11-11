@@ -1,0 +1,14 @@
+[Unit]
+Description=Hogar to Home Assistant MQTT Bridge (Roka's Room)
+After=network-online.target mosquitto.service
+Wants=mosquitto.service
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday
+ExecStart=/home/djpi/momo-env/bin/python -u hogar_mqtt_bridge.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

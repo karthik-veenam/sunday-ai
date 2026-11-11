@@ -1,0 +1,14 @@
+[Unit]
+Description=Sunday prompt editor (web page to edit and save Sunday's prompt files)
+After=network-online.target
+
+[Service]
+User=djpi
+WorkingDirectory=/home/djpi/sunday-prompt-editor
+ExecStart=/home/djpi/sunday2-env/bin/python -u /home/djpi/sunday-prompt-editor/prompt_editor.py
+Restart=on-failure
+RestartSec=5
+# NoNewPrivileges must stay off: "Save & apply" restarts the brain through sudo (only when Sunday is idle)
+
+[Install]
+WantedBy=multi-user.target

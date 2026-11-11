@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sunday wake feedback</title>
+<style>body{font:17px system-ui;max-width:850px;margin:24px auto;padding:0 16px;background:#101721;color:#edf2fa}article{background:#1d2938;padding:18px;border-radius:14px;margin:16px 0}button,input,select,a{font:inherit}button,a.button{padding:9px;margin:5px;border-radius:8px;cursor:pointer}input{width:90px}audio{display:block;width:100%;margin:12px 0}.muted{color:#b4c1d1}#message{color:#ffcd78}a{color:#9dcfff}</style>
+<h1>Sunday wake feedback</h1><p>Mark accidental wakes, listen to the original sound, adjust the clip, then approve it for future training. Your spoken correction is kept separately.</p>
+<button id="refresh">Refresh</button><button id="latest">Latest wake was a false activation</button><a href="export">Download approved negatives</a>
+<p class="muted">Unreviewed triggers: kept for 7 days, up to 500. Reported and reviewed clips stay saved. No automatic retraining.</p><p id="message" role="status"></p><div id="clips"></div>
+<script>
+let events=[];const message=document.querySelector('#message'),list=document.querySelector('#clips');
+async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const j=await r.json();if(!r.ok)throw Error(j.error||'Request failed');return j}
+function el(tag,text,parent){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(parent)parent.append(e);return e}
+async function update(c,body){try{await api('events/'+c.id,body);message.textContent='Saved.';await load()}catch(e){message.textContent=e.message}}
+async function load(){try{events=(await api('events')).events;list.replaceChildren();if(!events.length)el('p','No wake events captured yet. This page will fill when wake listening is enabled and Sunday triggers.',list);
+for(const c of events){const card=el('article',undefined,list);el('h2',new Date(c.created*1000).toLocaleString(),card);el('p',c.status+' · score '+Number(c.score).toFixed(4)+' · threshold '+c.threshold+' · '+c.duration.toFixed(2)+' seconds',card);
+if(c.status==='capturing'||c.status==='failed')continue;
+const player=el('audio',undefined,card);player.controls=true;player.preload='none';player.src='audio/'+c.id+'?full=1';
+el('span','Start ',card);const start=el('input',undefined,card);start.type='number';start.step='.01';start.min='0';start.max=c.duration;start.value=c.start;
+el('span',' End ',card);const end=el('input',undefined,card);end.type='number';end.step='.01';end.min='0';end.max=c.duration;end.value=c.end;
+const preview=el('button','Play selected clip',card);preview.onclick=()=>{player.src='audio/'+c.id+'?start='+encodeURIComponent(start.value)+'&end='+encodeURIComponent(end.value);player.play().catch(e=>message.textContent=e.message)};
+const b=el('button','Mark false activation',card);b.onclick=()=>update(c,{action:'report'});
+const approve=el('button','Approve as negative',card);approve.disabled=!['reported','approved'].includes(c.status);approve.onclick=()=>update(c,{status:'approved',start:Number(start.value),end:Number(end.value)});
+const reject=el('button','Reject / not a negative',card);reject.onclick=()=>update(c,{status:'rejected',start:Number(start.value),end:Number(end.value)});
+if(c.correction_text){el('p','Your correction: '+c.correction_text,card);const a=el('a','Play correction separately',card);a.href='audio/'+c.id+'?correction=1';a.target='_blank'}
+}}catch(e){message.textContent=e.message}}
+document.querySelector('#refresh').onclick=load;document.querySelector('#latest').onclick=()=>{const c=events[0];if(!c){message.textContent='No saved wake available.';return}if(['capturing','failed'].includes(c.status)){message.textContent='The latest wake audio is not ready yet. Refresh shortly.';return}update(c,{action:'report'})};load();
+</script></html>

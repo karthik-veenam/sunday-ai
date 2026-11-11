@@ -1,0 +1,13 @@
+[Unit]
+Description=Recover Sunday's selected body connection without changing audio selection
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=djpi
+WorkingDirectory=/home/djpi/sunday-audio
+Environment=SUNDAY_AUDIO_HOME=/home/djpi/sunday-audio
+ExecStart=/usr/bin/python3 /home/djpi/sunday-audio/body_recovery.py
+TimeoutStartSec=60
+Nice=10
+
